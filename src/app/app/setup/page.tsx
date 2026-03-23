@@ -47,6 +47,19 @@ function SetupPageInner() {
     }
   }, [initialSlug, status, autoClaimed]);
 
+  // If user already has a slug (e.g. returning user), redirect to dashboard
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/user")
+      .then((res) => res.ok && res.json())
+      .then((data) => {
+        if (!cancelled && data?.user?.slug) {
+          router.replace("/app");
+        }
+      });
+    return () => { cancelled = true; };
+  }, [router]);
+
   async function claimSlug(slugToClaim: string) {
     setClaiming(true);
     setError("");
@@ -61,7 +74,6 @@ function SetupPageInner() {
       const data = await res.json();
       setError(data.error ?? "Failed to claim slug");
       setClaiming(false);
-      setAutoClaimed(false);
       return;
     }
 

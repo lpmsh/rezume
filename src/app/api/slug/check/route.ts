@@ -20,12 +20,18 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const existing = await prisma.resume.findFirst({
-    where: { slug: validation.slug, namedSlug: null },
-    select: { id: true },
-  });
+  const [existingUser, existingResume] = await Promise.all([
+    prisma.user.findUnique({
+      where: { slug: validation.slug },
+      select: { id: true },
+    }),
+    prisma.resume.findFirst({
+      where: { slug: validation.slug, namedSlug: null },
+      select: { id: true },
+    }),
+  ]);
 
-  if (existing) {
+  if (existingUser || existingResume) {
     return NextResponse.json({
       available: false,
       reason: "This slug is taken",
