@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSlugCheck } from "@/hooks/use-slug-check";
 import { Button } from "@/components/ui/button";
-import { Check, X } from "lucide-react";
+import { Check, X, Link2, Upload, Share2 } from "lucide-react";
 
 export default function LandingPage() {
   const [slug, setSlug] = useState("");
@@ -48,35 +48,44 @@ export default function LandingPage() {
 
           <h2 className="text-neutral-500 text-lg font-medium pt-4">
             Upload a PDF, claim your personal URL, and share it everywhere.
-            Update your resume anytime — the link never changes.
+            Update your resume anytime. The link never changes.
           </h2>
 
           {/* Slug claim */}
-          <div className="flex flex-col gap-3 pt-6 max-w-md">
-            <div className="flex items-center h-10 rounded-lg bg-neutral-50 border border-neutral-200 px-4 transition-colors focus-within:border-sky-400 focus-within:bg-white">
-              <span className="shrink-0 text-sm text-neutral-400">
-                rezume.so/
-              </span>
-              <input
-                className="flex-1 min-w-0 bg-transparent px-1 text-sm outline-none placeholder:text-neutral-300"
-                placeholder="yourname"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value.toLowerCase())}
-                onKeyDown={(e) => e.key === "Enter" && handleClaim()}
-              />
-              {slug.length >= 3 && (
-                <div className="shrink-0">
-                  {status === "checking" && (
-                    <div className="size-4 animate-spin rounded-full border-2 border-neutral-200 border-t-sky-500" />
-                  )}
-                  {status === "available" && (
-                    <Check className="size-4 text-emerald-500" />
-                  )}
-                  {status === "unavailable" && (
-                    <X className="size-4 text-red-400" />
-                  )}
-                </div>
-              )}
+          <div className="flex flex-col gap-3 pt-6 max-w-lg">
+            <div className="flex items-center gap-2">
+              <div className="flex-1 flex items-center h-10 rounded-lg bg-neutral-50 border border-neutral-200 px-3 transition-colors focus-within:border-sky-400 focus-within:bg-white">
+                <span className="shrink-0 text-sm text-black">
+                  rezume.so/
+                </span>
+                <input
+                  className="flex-1 min-w-0 bg-transparent px-1 text-sm outline-none placeholder:text-neutral-300"
+                  placeholder="yourname"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value.toLowerCase())}
+                  onKeyDown={(e) => e.key === "Enter" && handleClaim()}
+                />
+                {slug.length >= 3 && (
+                  <div className="shrink-0">
+                    {status === "checking" && (
+                      <div className="size-4 animate-spin rounded-full border-2 border-neutral-200 border-t-sky-500" />
+                    )}
+                    {status === "available" && (
+                      <Check className="size-4 text-emerald-500" />
+                    )}
+                    {status === "unavailable" && (
+                      <X className="size-4 text-red-400" />
+                    )}
+                  </div>
+                )}
+              </div>
+              <Button
+                className="h-10"
+                onClick={handleClaim}
+                disabled={status !== "available"}
+              >
+                Claim your link
+              </Button>
             </div>
 
             {slug.length >= 3 && status === "available" && (
@@ -87,21 +96,6 @@ export default function LandingPage() {
             {slug.length >= 3 && status === "unavailable" && (
               <p className="text-sm text-red-500">{reason}</p>
             )}
-
-            <div className="flex items-center gap-x-2">
-              <Button
-                size="lg"
-                onClick={handleClaim}
-                disabled={status !== "available"}
-              >
-                Claim your link
-              </Button>
-              <Link href="/login">
-                <Button size="lg" variant="ghost">
-                  Sign in
-                </Button>
-              </Link>
-            </div>
           </div>
         </div>
 
@@ -114,25 +108,36 @@ export default function LandingPage() {
             </mark>
           </h1>
           <div className="select-none rounded-[10px] grid md:grid-cols-3 w-full justify-items-center mt-6 gap-[2px] bg-neutral-100 p-[2px]">
-            <div className="w-full flex flex-col items-center p-6 bg-white rounded-[8px] gap-2">
-              <span className="text-3xl">1</span>
-              <h3 className="font-semibold text-black">Claim a slug</h3>
-              <p className="text-neutral-500 text-sm text-center">
-                Pick your personal URL like rezume.so/yourname
+            <div className="w-full flex flex-col items-center p-8 bg-white rounded-[8px] gap-3">
+              <div className="size-10 rounded-full bg-sky-50 flex items-center justify-center">
+                <Link2 className="size-5 text-sky-500" />
+              </div>
+              <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Step 1</span>
+              <h3 className="font-semibold text-black text-lg">Claim your URL</h3>
+              <p className="text-neutral-500 text-sm text-center leading-relaxed">
+                Pick a personal link like{" "}
+                <span className="text-sky-500 font-medium">rezume.so/yourname</span>{" "}
+                and it&apos;s yours forever.
               </p>
             </div>
-            <div className="w-full flex flex-col items-center p-6 bg-white rounded-[8px] gap-2">
-              <span className="text-3xl">2</span>
-              <h3 className="font-semibold text-black">Upload your PDF</h3>
-              <p className="text-neutral-500 text-sm text-center">
-                Drag and drop or select your resume file
+            <div className="w-full flex flex-col items-center p-8 bg-white rounded-[8px] gap-3">
+              <div className="size-10 rounded-full bg-sky-50 flex items-center justify-center">
+                <Upload className="size-5 text-sky-500" />
+              </div>
+              <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Step 2</span>
+              <h3 className="font-semibold text-black text-lg">Upload your resume</h3>
+              <p className="text-neutral-500 text-sm text-center leading-relaxed">
+                Drop in a PDF. Swap it out whenever you want. The link stays the same.
               </p>
             </div>
-            <div className="w-full flex flex-col items-center p-6 bg-white rounded-[8px] gap-2">
-              <span className="text-3xl">3</span>
-              <h3 className="font-semibold text-black">Share the link</h3>
-              <p className="text-neutral-500 text-sm text-center">
-                One URL that always points to your latest resume
+            <div className="w-full flex flex-col items-center p-8 bg-white rounded-[8px] gap-3">
+              <div className="size-10 rounded-full bg-sky-50 flex items-center justify-center">
+                <Share2 className="size-5 text-sky-500" />
+              </div>
+              <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Step 3</span>
+              <h3 className="font-semibold text-black text-lg">Share everywhere</h3>
+              <p className="text-neutral-500 text-sm text-center leading-relaxed">
+                Add it to your LinkedIn, portfolio, or email signature. One link, always up to date.
               </p>
             </div>
           </div>
@@ -140,7 +145,7 @@ export default function LandingPage() {
 
         {/* Footer */}
         <footer className="py-8 text-center text-sm text-neutral-400">
-          Made with love by{" "}
+          Made with ❤️ by{" "}
           <a
             href="https://x.com/lmon_25"
             target="_blank"

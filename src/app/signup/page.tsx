@@ -102,7 +102,7 @@ function SignupPageInner() {
             <div className="flex flex-col gap-1.5">
               <Label>Your link</Label>
               <div className="flex items-center h-9 rounded-lg border border-neutral-200 bg-neutral-50 px-3 transition-colors focus-within:border-sky-400 focus-within:bg-white">
-                <span className="shrink-0 text-sm text-neutral-400">
+                <span className="shrink-0 text-sm text-black">
                   rezume.so/
                 </span>
                 <input
