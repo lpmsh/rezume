@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 async function getSession(request: NextRequest) {
-  const sessionToken =
-    request.cookies.get("better-auth.session_token")?.value;
+  const sessionToken = request.cookies.get("better-auth.session_token")?.value;
 
   if (!sessionToken) return null;
 
@@ -12,7 +11,7 @@ async function getSession(request: NextRequest) {
       headers: {
         cookie: request.headers.get("cookie") ?? "",
       },
-    }
+    },
   );
 
   if (!sessionRes.ok) return null;
@@ -20,7 +19,7 @@ async function getSession(request: NextRequest) {
   return sessionRes.json();
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Protected routes — redirect to login if not authenticated
