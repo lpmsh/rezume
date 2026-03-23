@@ -13,11 +13,13 @@ model User {
   email         String    @unique
   emailVerified Boolean
   image         String?
+  slug          String?   @unique
   createdAt     DateTime
   updatedAt     DateTime
 
   sessions Session[]
   accounts Account[]
+  resumes  Resume[]
 }
 
 model Session {
@@ -58,4 +60,34 @@ model Verification {
   expiresAt  DateTime
   createdAt  DateTime?
   updatedAt  DateTime?
+}
+
+model Resume {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName String
+  slug        String
+  namedSlug   String?
+  r2Key       String
+  fileSize    Int
+  mimeType    String
+  isPublic    Boolean  @default(true)
+  isPrimary   Boolean  @default(false)
+  password    String?
+  viewCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  views       ResumeView[]
+
+  @@unique([slug, namedSlug])
+}
+
+model ResumeView {
+  id        String   @id @default(cuid())
+  resumeId  String
+  resume    Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  ipHash    String?
+  userAgent String?
+  viewedAt  DateTime @default(now())
 }
