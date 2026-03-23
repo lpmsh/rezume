@@ -144,7 +144,7 @@ export default function LandingPage() {
         </div>
 
         {/* Footer */}
-        <footer className="py-8 text-center text-sm text-neutral-400">
+        <footer className="pt-8 pb-4 text-center text-sm text-neutral-400">
           Made with ❤️ by{" "}
           <a
             href="https://x.com/lmon_25"
