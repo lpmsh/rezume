@@ -106,7 +106,7 @@ export default function LandingPage() {
         </div>
 
         {/* How it works */}
-        <div className="py-24 w-full flex flex-col">
+        <div className="pt-24 w-full flex flex-col">
           <h1 className="font-heading text-5xl text-black text-left pb-1 select-none">
             How it{" "}
             <mark className="font-heading -py-0.5 rounded-md px-1 bg-sky-100 text-sky-500 text-5xl text-left">
@@ -137,6 +137,19 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
+
+        {/* Footer */}
+        <footer className="py-8 text-center text-sm text-neutral-400">
+          Made with love by{" "}
+          <a
+            href="https://x.com/lmon_25"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-neutral-500 underline underline-offset-2 hover:text-black transition-colors"
+          >
+            Liam
+          </a>
+        </footer>
       </div>
     </div>
   );
