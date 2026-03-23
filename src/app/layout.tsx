@@ -9,9 +9,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Rezume — Your resume, one link",
+  title: "Rezume - Your resume, one link",
   description:
-    "Upload a PDF, claim your slug, share a permanent link. Update your resume — same URL, always.",
+    "Upload a PDF, claim your slug, share a permanent link. Update your resume, same URL, always.",
 };
 
 export default function RootLayout({
