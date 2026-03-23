@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
@@ -17,6 +17,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import {
   Copy,
   Check,
   Upload,
@@ -27,7 +33,9 @@ import {
   FileText,
   Star,
   Plus,
+  Loader2,
 } from "lucide-react";
+import { LazyPdfViewer } from "@/components/pdf-viewer-lazy";
 
 type Resume = {
   id: string;
@@ -100,11 +108,12 @@ export default function DashboardPage() {
       <div className="w-full min-h-dvh flex flex-col items-center">
         <div className="px-4 py-4 max-w-4xl w-full">
           <DashboardHeader />
-          <div className="flex flex-col items-center justify-center pt-32 gap-4">
+          <ShareLinkSection slug={slug} />
+          <div className="flex flex-col items-center justify-center pt-24 gap-4">
             <div className="size-16 rounded-2xl bg-neutral-100 flex items-center justify-center">
               <FileText className="size-8 text-neutral-400" />
             </div>
-            <h2 className="text-xl font-semibold text-black">
+            <h2 className="text-xl text-black font-heading">
               No resumes yet
             </h2>
             <p className="text-neutral-500 text-sm">
@@ -131,15 +140,11 @@ export default function DashboardPage() {
     <div className="w-full min-h-dvh flex flex-col items-center">
       <div className="px-4 py-4 max-w-4xl w-full">
         <DashboardHeader />
+        <ShareLinkSection slug={slug} />
 
-        <div className="pt-12">
+        <div className="pt-8">
           <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="font-bold text-3xl text-black">Your Resumes</h1>
-              <p className="text-neutral-400 text-sm mt-1">
-                rezume.so/{slug}
-              </p>
-            </div>
+            <h1 className="font-heading text-3xl text-black">Your Resumes</h1>
             <Button size="sm" onClick={() => setUploadOpen(true)}>
               <Plus className="size-4 mr-1.5" />
               Upload new
@@ -182,13 +187,49 @@ function DashboardHeader() {
   return (
     <div className="w-full flex justify-between items-center h-fit">
       <Link href="/home" className="flex items-center gap-x-3">
-        <div className="size-8 bg-sky-500 rounded-lg" />
+        <div className="size-6 bg-sky-500 rounded-md" />
         <h3 className="text-xl font-semibold text-black">Rezume</h3>
       </Link>
       <div className="flex items-center gap-x-2">
         <Button variant="ghost" size="sm" onClick={handleSignOut}>
           Sign out
         </Button>
+      </div>
+    </div>
+  );
+}
+
+function ShareLinkSection({ slug }: { slug: string }) {
+  const [copied, setCopied] = useState(false);
+  const url = `https://rezume.so/${slug}`;
+
+  async function handleCopy() {
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <div className="mt-8 rounded-xl border border-neutral-200 bg-white p-5">
+      <p className="text-sm font-medium text-neutral-500 mb-2">Your public link</p>
+      <div className="flex items-center gap-2">
+        <div className="flex-1 rounded-lg bg-neutral-50 border border-neutral-200 px-3 py-2 text-sm text-black font-medium truncate">
+          rezume.so/{slug}
+        </div>
+        <Button size="sm" variant="outline" onClick={handleCopy}>
+          {copied ? (
+            <Check className="size-4 mr-1.5 text-emerald-500" />
+          ) : (
+            <Copy className="size-4 mr-1.5" />
+          )}
+          {copied ? "Copied!" : "Copy"}
+        </Button>
+        <Link href={`/${slug}`} target="_blank">
+          <Button size="sm" variant="outline">
+            <ExternalLink className="size-4 mr-1.5" />
+            Visit
+          </Button>
+        </Link>
       </div>
     </div>
   );
@@ -379,15 +420,28 @@ function ResumeCard({
   const [editName, setEditName] = useState(resume.displayName);
   const [deleting, setDeleting] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   const publicUrl = `rezume.so/${resume.slug}${resume.namedSlug ? `/${resume.namedSlug}` : ""}`;
-  const previewPath = `/${resume.slug}${resume.namedSlug ? `/${resume.namedSlug}` : ""}`;
 
   async function handleCopy() {
     await navigator.clipboard.writeText(`https://${publicUrl}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handlePreview() {
+    setPreviewOpen(true);
+    setPreviewLoading(true);
+    const res = await fetch(`/api/resumes/${resume.id}/preview`);
+    if (res.ok) {
+      const blob = await res.blob();
+      const dataUrl = URL.createObjectURL(blob);
+      setPreviewUrl(dataUrl);
+    }
+    setPreviewLoading(false);
   }
 
   async function handleSaveName() {
@@ -411,18 +465,6 @@ function ResumeCard({
     onUpdate();
   }
 
-  async function handleReUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("slug", resume.slug);
-    formData.append("displayName", resume.displayName);
-
-    await fetch("/api/upload", { method: "POST", body: formData });
-    onUpdate();
-  }
 
   async function handleDelete() {
     setDeleting(true);
@@ -525,28 +567,10 @@ function ResumeCard({
           {copied ? "Copied!" : "Copy link"}
         </Button>
 
-        <Link href={previewPath} target="_blank">
-          <Button size="sm" variant="ghost">
-            <ExternalLink className="size-4 mr-1.5" />
-            Preview
-          </Button>
-        </Link>
-
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <Upload className="size-4 mr-1.5" />
-          Re-upload
+        <Button size="sm" variant="ghost" onClick={handlePreview}>
+          <Eye className="size-4 mr-1.5" />
+          Preview
         </Button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".pdf,application/pdf"
-          onChange={handleReUpload}
-          className="hidden"
-        />
 
         <div className="flex-1" />
 
@@ -589,6 +613,39 @@ function ResumeCard({
           </DialogContent>
         </Dialog>
       </div>
+
+      <Sheet
+        open={previewOpen}
+        onOpenChange={(open) => {
+          setPreviewOpen(open);
+          if (!open) {
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+            setPreviewUrl(null);
+          }
+        }}
+      >
+        <SheetContent side="right" className="data-[side=right]:sm:max-w-3xl w-full flex flex-col">
+          <SheetHeader>
+            <SheetTitle>{resume.displayName}</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-hidden">
+            {previewLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <Loader2 className="size-6 animate-spin text-neutral-400" />
+              </div>
+            ) : previewUrl ? (
+              <LazyPdfViewer
+                file={previewUrl}
+                className="h-full overflow-y-auto bg-neutral-100 px-4 py-4"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-neutral-400">
+                Failed to load preview
+              </div>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

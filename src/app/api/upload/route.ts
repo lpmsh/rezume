@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { uploadResume, deleteResume } from "@/lib/r2";
+import { uploadResume } from "@/lib/r2";
 import { redis } from "@/lib/redis";
 import { auth } from "@/lib/auth";
 
@@ -75,44 +75,25 @@ export async function POST(request: NextRequest) {
 
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  // Check if re-upload (user already has a resume with this slug)
-  const existing = await prisma.resume.findFirst({
-    where: { userId, slug, namedSlug: null },
-  });
+  // Create new resume and mark it as primary, unset old primary
+  const resume = await prisma.$transaction(async (tx) => {
+    // Unset any existing primary resume for this slug
+    await tx.resume.updateMany({
+      where: { userId, slug, isPrimary: true },
+      data: { isPrimary: false },
+    });
 
-  if (existing) {
-    // Re-upload: delete old R2 object, upload new one
-    await deleteResume(existing.r2Key);
-    const r2Key = await uploadResume(userId, existing.id, buffer, displayName);
-    const updated = await prisma.resume.update({
-      where: { id: existing.id },
+    return tx.resume.create({
       data: {
-        r2Key,
+        userId,
+        slug,
+        displayName,
+        r2Key: "", // placeholder, will update after R2 upload
         fileSize: file.size,
         mimeType: file.type || "application/pdf",
-        displayName,
+        isPrimary: true,
       },
     });
-    return NextResponse.json({ resume: updated });
-  }
-
-  // Check if user has any existing resumes with this slug
-  const existingCount = await prisma.resume.count({
-    where: { userId, slug },
-  });
-  const isPrimary = existingCount === 0;
-
-  // New upload
-  const resume = await prisma.resume.create({
-    data: {
-      userId,
-      slug,
-      displayName,
-      r2Key: "", // placeholder, will update after R2 upload
-      fileSize: file.size,
-      mimeType: file.type || "application/pdf",
-      isPrimary,
-    },
   });
 
   const r2Key = await uploadResume(userId, resume.id, buffer, displayName);

@@ -24,7 +24,7 @@ export default function LandingPage() {
         {/* Header */}
         <div className="w-full flex justify-between items-center h-fit">
           <Link href="/" className="flex items-center gap-x-3">
-            <div className="size-8 bg-sky-500 rounded-lg" />
+            <div className="size-6 bg-sky-500 rounded-md" />
             <h3 className="text-xl font-semibold text-black">Rezume</h3>
           </Link>
           <div className="flex items-center gap-x-2">
@@ -39,10 +39,10 @@ export default function LandingPage() {
 
         {/* Hero */}
         <div className="w-full pt-16 md:max-w-[80%] select-none">
-          <h1 className="font-bold text-5xl text-black text-left pb-1">
+          <h1 className="font-heading text-5xl text-black text-left pb-1">
             Your Resume,
           </h1>
-          <mark className="-py-0.5 rounded-md px-1 bg-sky-100 text-sky-500 font-bold text-5xl text-left">
+          <mark className="font-heading -py-0.5 rounded-md px-1 bg-sky-100 text-sky-500 text-5xl text-left">
             One Link Away
           </mark>
 
@@ -107,9 +107,9 @@ export default function LandingPage() {
 
         {/* How it works */}
         <div className="py-24 w-full flex flex-col">
-          <h1 className="font-bold text-5xl text-black text-left pb-1 select-none">
+          <h1 className="font-heading text-5xl text-black text-left pb-1 select-none">
             How it{" "}
-            <mark className="-py-0.5 rounded-md px-1 bg-sky-100 text-sky-500 font-bold text-5xl text-left">
+            <mark className="font-heading -py-0.5 rounded-md px-1 bg-sky-100 text-sky-500 text-5xl text-left">
               Works
             </mark>
           </h1>

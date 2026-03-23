@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getResumeUrl } from "@/lib/r2";
+import { getResume } from "@/lib/r2";
 import { trackView } from "@/lib/view-counter";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { ResumeViewer } from "./resume-viewer";
+import { ResumeViewer } from "./resume-viewer-loader";
 
 export default async function PublicResumePage({
   params,
@@ -22,7 +22,9 @@ export default async function PublicResumePage({
     notFound();
   }
 
-  const pdfUrl = await getResumeUrl(resume.r2Key);
+  const { body } = await getResume(resume.r2Key);
+  const pdfBytes = await body!.transformToByteArray();
+  const pdfDataUrl = `data:application/pdf;base64,${Buffer.from(pdfBytes).toString("base64")}`;
 
   // Track view (non-blocking)
   const reqHeaders = await headers();
@@ -42,20 +44,18 @@ export default async function PublicResumePage({
   });
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="flex-1">
-        <ResumeViewer
-          pdfUrl={pdfUrl}
-          displayName={resume.displayName}
-          resumeId={resume.id}
-        />
-      </div>
-      <footer className="border-t py-3 text-center text-xs text-muted-foreground">
+    <div className="h-screen">
+      <ResumeViewer
+        pdfUrl={pdfDataUrl}
+        displayName={resume.displayName}
+        resumeId={resume.id}
+      />
+      <div className="fixed right-4 bottom-4 z-10 rounded-full bg-white/90 px-3 py-1.5 text-xs text-muted-foreground shadow-sm ring-1 ring-black/5 backdrop-blur-sm">
         Powered by{" "}
-        <a href="/" className="text-primary underline underline-offset-2">
+        <a href="/" className="font-medium text-foreground/70 underline underline-offset-2 hover:text-foreground">
           rezume.so
         </a>
-      </footer>
+      </div>
     </div>
   );
 }

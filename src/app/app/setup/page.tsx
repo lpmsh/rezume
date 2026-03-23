@@ -81,7 +81,7 @@ function SetupPageInner() {
       <div className="px-4 py-4 max-w-4xl w-full">
         <div className="w-full flex justify-between items-center h-fit">
           <Link href="/home" className="flex items-center gap-x-3">
-            <div className="size-8 bg-sky-500 rounded-lg" />
+            <div className="size-6 bg-sky-500 rounded-md" />
             <h3 className="text-xl font-semibold text-black">Rezume</h3>
           </Link>
         </div>
