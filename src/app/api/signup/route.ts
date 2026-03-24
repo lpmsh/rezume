@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { validateSlug } from "@/lib/slugs";
 
 export async function POST(request: NextRequest) {
@@ -47,33 +48,21 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Create account via better-auth's own endpoint so cookies are set properly
-  const signUpRes = await fetch(
-    new URL("/api/auth/sign-up/email", request.url),
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        cookie: request.headers.get("cookie") ?? "",
-        origin: request.headers.get("origin") ?? new URL(request.url).origin,
-      },
-      body: JSON.stringify({ name, email, password }),
-    }
-  );
-
-  if (!signUpRes.ok) {
-    let message = "Failed to create account";
-    try {
-      const data = await signUpRes.json();
-      message = data.message ?? data.error ?? message;
-    } catch {
-      // empty
-    }
-    return NextResponse.json({ error: message }, { status: signUpRes.status });
+  // Create account via better-auth's direct API — nextCookies() plugin
+  // will set session cookies on the current response automatically
+  let signUpResult;
+  try {
+    signUpResult = await auth.api.signUpEmail({
+      body: { name, email, password },
+      headers: request.headers,
+    });
+  } catch (e: unknown) {
+    const message =
+      e instanceof Error ? e.message : "Failed to create account";
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 
-  const signUpData = await signUpRes.json();
-  const userId = signUpData.user?.id;
+  const userId = signUpResult?.user?.id;
 
   if (!userId) {
     return NextResponse.json(
@@ -88,12 +77,5 @@ export async function POST(request: NextRequest) {
     data: { slug: validation.slug },
   });
 
-  // Forward the Set-Cookie headers from better-auth's response
-  const response = NextResponse.json({ success: true });
-  const setCookie = signUpRes.headers.getSetCookie();
-  for (const cookie of setCookie) {
-    response.headers.append("Set-Cookie", cookie);
-  }
-
-  return response;
+  return NextResponse.json({ success: true });
 }
