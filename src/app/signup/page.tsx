@@ -101,7 +101,7 @@ function SignupPageInner() {
             {/* Slug selection — always first */}
             <div className="flex flex-col gap-1.5">
               <Label>Your link</Label>
-              <div className="flex items-center h-9 rounded-lg border border-neutral-200 bg-neutral-50 px-3 transition-colors focus-within:border-sky-400 focus-within:bg-white">
+              <div className="flex items-center h-9 rounded-lg border border-neutral-200 bg-neutral-50 px-3 transition-colors focus-within:border-violet-400 focus-within:bg-white">
                 <span className="shrink-0 text-sm text-black">
                   rezume.so/
                 </span>
@@ -114,7 +114,7 @@ function SignupPageInner() {
                 {slug.length >= 3 && (
                   <div className="shrink-0">
                     {slugStatus === "checking" && (
-                      <div className="size-4 animate-spin rounded-full border-2 border-neutral-200 border-t-sky-500" />
+                      <div className="size-4 animate-spin rounded-full border-2 border-neutral-200 border-t-violet-500" />
                     )}
                     {slugStatus === "available" && (
                       <Check className="size-4 text-emerald-500" />
@@ -196,7 +196,7 @@ function SignupPageInner() {
 
             <p className="text-center text-sm text-neutral-500">
               Already have an account?{" "}
-              <Link href="/login" className="text-sky-500 underline">
+              <Link href="/login" className="text-violet-500 underline">
                 Sign in
               </Link>
             </p>

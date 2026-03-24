@@ -24,7 +24,7 @@ export default function LandingPage() {
         {/* Header */}
         <div className="w-full flex justify-between items-center h-fit">
           <Link href="/" className="flex items-center gap-x-3">
-            <div className="size-6 bg-sky-500 rounded-md" />
+            <div className="size-6 bg-violet-500 rounded-md" />
             <h3 className="text-xl font-semibold text-black">Rezume</h3>
           </Link>
           <div className="flex items-center gap-x-2">
@@ -42,7 +42,7 @@ export default function LandingPage() {
           <h1 className="font-heading text-5xl text-black text-left pb-1">
             Your Resume,
           </h1>
-          <mark className="font-heading -py-0.5 rounded-md px-1 bg-sky-100 text-sky-500 text-5xl text-left">
+          <mark className="font-heading -py-0.5 rounded-md px-1 bg-violet-100 text-violet-500 text-5xl text-left">
             One Link Away
           </mark>
 
@@ -54,7 +54,7 @@ export default function LandingPage() {
           {/* Slug claim */}
           <div className="flex flex-col gap-3 pt-6 max-w-lg">
             <div className="flex items-center gap-2">
-              <div className="flex-1 flex items-center h-10 rounded-lg bg-neutral-50 border border-neutral-200 px-3 transition-colors focus-within:border-sky-400 focus-within:bg-white">
+              <div className="flex-1 flex items-center h-10 rounded-lg bg-neutral-50 border border-neutral-200 px-3 transition-colors focus-within:border-violet-400 focus-within:bg-white">
                 <span className="shrink-0 text-sm text-black">
                   rezume.so/
                 </span>
@@ -68,7 +68,7 @@ export default function LandingPage() {
                 {slug.length >= 3 && (
                   <div className="shrink-0">
                     {status === "checking" && (
-                      <div className="size-4 animate-spin rounded-full border-2 border-neutral-200 border-t-sky-500" />
+                      <div className="size-4 animate-spin rounded-full border-2 border-neutral-200 border-t-violet-500" />
                     )}
                     {status === "available" && (
                       <Check className="size-4 text-emerald-500" />
@@ -103,26 +103,26 @@ export default function LandingPage() {
         <div className="pt-24 w-full flex flex-col">
           <h1 className="font-heading text-5xl text-black text-left pb-1 select-none">
             How it{" "}
-            <mark className="font-heading -py-0.5 rounded-md px-1 bg-sky-100 text-sky-500 text-5xl text-left">
+            <mark className="font-heading -py-0.5 rounded-md px-1 bg-violet-100 text-violet-500 text-5xl text-left">
               Works
             </mark>
           </h1>
           <div className="select-none rounded-[10px] grid md:grid-cols-3 w-full justify-items-center mt-6 gap-[2px] bg-neutral-100 p-[2px]">
             <div className="w-full flex flex-col items-center p-8 bg-white rounded-[8px] gap-3">
-              <div className="size-10 rounded-full bg-sky-50 flex items-center justify-center">
-                <Link2 className="size-5 text-sky-500" />
+              <div className="size-10 rounded-full bg-violet-50 flex items-center justify-center">
+                <Link2 className="size-5 text-violet-500" />
               </div>
               <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Step 1</span>
               <h3 className="font-semibold text-black text-lg">Claim your URL</h3>
               <p className="text-neutral-500 text-sm text-center leading-relaxed">
                 Pick a personal link like{" "}
-                <span className="text-sky-500 font-medium">rezume.so/yourname</span>{" "}
+                <span className="text-violet-500 font-medium">rezume.so/yourname</span>{" "}
                 and it&apos;s yours forever.
               </p>
             </div>
             <div className="w-full flex flex-col items-center p-8 bg-white rounded-[8px] gap-3">
-              <div className="size-10 rounded-full bg-sky-50 flex items-center justify-center">
-                <Upload className="size-5 text-sky-500" />
+              <div className="size-10 rounded-full bg-violet-50 flex items-center justify-center">
+                <Upload className="size-5 text-violet-500" />
               </div>
               <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Step 2</span>
               <h3 className="font-semibold text-black text-lg">Upload your resume</h3>
@@ -131,8 +131,8 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="w-full flex flex-col items-center p-8 bg-white rounded-[8px] gap-3">
-              <div className="size-10 rounded-full bg-sky-50 flex items-center justify-center">
-                <Share2 className="size-5 text-sky-500" />
+              <div className="size-10 rounded-full bg-violet-50 flex items-center justify-center">
+                <Share2 className="size-5 text-violet-500" />
               </div>
               <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">Step 3</span>
               <h3 className="font-semibold text-black text-lg">Share everywhere</h3>
