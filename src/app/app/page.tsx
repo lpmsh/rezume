@@ -187,7 +187,7 @@ function DashboardHeader() {
   return (
     <div className="w-full flex justify-between items-center h-fit">
       <Link href="/home" className="flex items-center gap-x-3">
-        <div className="size-6 bg-sky-500 rounded-md" />
+        <div className="size-6 bg-violet-500 rounded-md" />
         <h3 className="text-xl font-semibold text-black">Rezume</h3>
       </Link>
       <div className="flex items-center gap-x-2">
@@ -342,7 +342,7 @@ function UploadDialog({
             onDragOver={handleDrag}
             onDrop={handleDrop}
             className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
-              dragActive ? "border-sky-400 bg-sky-50" : "border-neutral-200"
+              dragActive ? "border-violet-400 bg-violet-50" : "border-neutral-200"
             }`}
           >
             {file ? (
@@ -477,7 +477,7 @@ function ResumeCard({
   return (
     <div
       className={`rounded-xl border bg-white p-5 transition-colors hover:border-neutral-300 ${
-        resume.isPrimary ? "border-sky-200 bg-sky-50/30" : "border-neutral-200"
+        resume.isPrimary ? "border-violet-200 bg-violet-50/30" : "border-neutral-200"
       }`}
     >
       <div className="flex items-start justify-between gap-4">
@@ -517,7 +517,7 @@ function ResumeCard({
                 {resume.displayName}
               </h3>
               {resume.isPrimary && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-600">
+                <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-600">
                   <Star className="size-3" />
                   Primary
                 </span>

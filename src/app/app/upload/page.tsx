@@ -127,7 +127,7 @@ function UploadPageInner() {
               onDrop={handleDrop}
               className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
                 dragActive
-                  ? "border-sky-400 bg-sky-50"
+                  ? "border-violet-400 bg-violet-50"
                   : "border-neutral-200"
               }`}
             >

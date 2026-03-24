@@ -93,7 +93,7 @@ function SetupPageInner() {
       <div className="px-4 py-4 max-w-4xl w-full">
         <div className="w-full flex justify-between items-center h-fit">
           <Link href="/home" className="flex items-center gap-x-3">
-            <div className="size-6 bg-sky-500 rounded-md" />
+            <div className="size-6 bg-violet-500 rounded-md" />
             <h3 className="text-xl font-semibold text-black">Rezume</h3>
           </Link>
         </div>
@@ -113,7 +113,7 @@ function SetupPageInner() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-col gap-4">
-                <div className="flex items-center h-9 rounded-lg border border-neutral-200 bg-neutral-50 px-4 transition-colors focus-within:border-sky-400 focus-within:bg-white">
+                <div className="flex items-center h-9 rounded-lg border border-neutral-200 bg-neutral-50 px-4 transition-colors focus-within:border-violet-400 focus-within:bg-white">
                   <span className="shrink-0 text-sm text-black">
                     rezume.so/
                   </span>
@@ -128,7 +128,7 @@ function SetupPageInner() {
                   {slug.length >= 3 && (
                     <div className="shrink-0">
                       {status === "checking" && (
-                        <div className="size-4 animate-spin rounded-full border-2 border-neutral-200 border-t-sky-500" />
+                        <div className="size-4 animate-spin rounded-full border-2 border-neutral-200 border-t-violet-500" />
                       )}
                       {status === "available" && (
                         <Check className="size-4 text-emerald-500" />
