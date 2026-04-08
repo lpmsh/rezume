@@ -38,7 +38,7 @@ export const auth = betterAuth({
       : undefined,
   },
   emailAndPassword: {
-    enabled: true,
+    enabled: false,
   },
   socialProviders: {
     google: {
