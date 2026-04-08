@@ -1,3 +1,6 @@
+
+<img width="1199" height="625" alt="Screenshot 2026-04-08 at 4 02 13 AM" src="https://github.com/user-attachments/assets/138cc2ea-bff1-42b8-a963-9945baf44830" />
+
 # Rezume
 
 Dead-simple resume hosting. Upload a PDF, claim a slug, share a permanent link.
