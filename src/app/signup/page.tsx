@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { useSlugCheck } from "@/hooks/use-slug-check";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Card,
@@ -32,51 +31,18 @@ export default function SignupPage() {
 }
 
 function SignupPageInner() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const initialSlug = searchParams.get("slug") ?? "";
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [slug, setSlug] = useState(initialSlug);
   const { status: slugStatus, reason: slugReason } = useSlugCheck(slug);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const slugReady = slugStatus === "available";
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!slugReady) return;
-
-    setError("");
-    setLoading(true);
-
-    const res = await fetch("/api/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, slug }),
-    });
-
-    if (!res.ok) {
-      let message = "Failed to create account";
-      try {
-        const data = await res.json();
-        message = data.error ?? message;
-      } catch {
-        // empty response
-      }
-      setError(message);
-      setLoading(false);
-      return;
-    }
-
-    router.push("/app");
-  }
-
   async function handleGoogleSignUp() {
     if (!slugReady) return;
+    setLoading(true);
 
     // Store slug in cookie so we can claim it after OAuth callback
     document.cookie = `pending_slug=${encodeURIComponent(slug)};path=/;max-age=600;samesite=lax`;
@@ -93,12 +59,12 @@ function SignupPageInner() {
         <CardHeader>
           <CardTitle>Create your account</CardTitle>
           <CardDescription>
-            Pick your link and sign up to get started
+            Pick your link and sign up with Google
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
-            {/* Slug selection — always first */}
+            {/* Slug selection */}
             <div className="flex flex-col gap-1.5">
               <Label>Your link</Label>
               <div className="flex items-center h-9 rounded-lg border border-neutral-200 bg-neutral-50 px-3 transition-colors focus-within:border-violet-400 focus-within:bg-white">
@@ -139,60 +105,13 @@ function SignupPageInner() {
               variant="ghost"
               className="w-full"
               onClick={handleGoogleSignUp}
-              disabled={!slugReady}
+              disabled={!slugReady || loading}
             >
               <GoogleIcon />
-              <span className="ml-2">Continue with Google</span>
+              <span className="ml-2">
+                {loading ? "Redirecting..." : "Continue with Google"}
+              </span>
             </Button>
-
-            <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-neutral-200" />
-              <span className="text-xs text-neutral-400">or</span>
-              <div className="h-px flex-1 bg-neutral-200" />
-            </div>
-
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="At least 8 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={8}
-                />
-              </div>
-
-              {error && <p className="text-sm text-red-500">{error}</p>}
-
-              <Button type="submit" disabled={!slugReady || loading}>
-                {loading ? "Creating account..." : "Create account"}
-              </Button>
-            </form>
 
             <p className="text-center text-sm text-neutral-500">
               Already have an account?{" "}
