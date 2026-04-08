@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rezume
+
+Dead-simple resume hosting. Upload a PDF, claim a slug, share a permanent link.
+
+Your resume lives at `rezume.so/yourname` — update the PDF anytime without changing the URL.
+
+## Features
+
+- Claim a unique slug (e.g. `rezume.so/liam`)
+- Upload and replace PDF resumes
+- Inline PDF viewer on public pages
+- View counter with IP deduplication (no inflated numbers)
+- Google OAuth sign-in
+- Dashboard to manage your resumes
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router), React 19, TypeScript
+- **Styling**: Tailwind CSS v4, shadcn/ui
+- **Database**: PostgreSQL via Prisma 7
+- **Storage**: Cloudflare R2
+- **Auth**: better-auth (Google OAuth)
+- **Cache**: Upstash Redis (rate limiting, view dedup)
+- **Hosting**: Vercel
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- [Bun](https://bun.sh)
+- PostgreSQL database
+- Cloudflare R2 bucket
+- Upstash Redis instance
+- Google OAuth credentials
+
+### Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+# Install dependencies
+bun install
+
+# Copy environment variables
+cp .env.example .env
+# Fill in your values in .env
+
+# Run database migrations
+bun run db:migrate
+
+# Start development server
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See [`.env.example`](.env.example) for all required variables:
 
-## Learn More
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `R2_ACCOUNT_ID` | Cloudflare account ID |
+| `R2_ACCESS_KEY_ID` | R2 access key |
+| `R2_SECRET_ACCESS_KEY` | R2 secret key |
+| `R2_BUCKET_NAME` | R2 bucket name |
+| `BETTER_AUTH_SECRET` | Auth secret (`openssl rand -base64 32`) |
+| `BETTER_AUTH_URL` | App URL (default: `http://localhost:3000`) |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
+| `UPSTASH_REDIS_REST_URL` | Upstash Redis URL |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis token |
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/
+│   ├── [slug]/        # Public resume viewer
+│   ├── app/           # Authenticated dashboard
+│   ├── login/         # Login page
+│   ├── signup/        # Signup page
+│   └── api/           # API routes (upload, slug, resumes)
+├── components/        # UI components (shadcn/ui + custom)
+├── hooks/             # Custom React hooks
+└── lib/               # Utilities (prisma, redis, r2, auth, slugs)
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
