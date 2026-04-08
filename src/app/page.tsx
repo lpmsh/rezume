@@ -112,6 +112,19 @@ export default function LandingPage() {
             </p>
           </div>
         </div>
+
+        {/* Footer */}
+        <div className="pb-4 text-center text-xs text-neutral-400">
+          made with ❤️ by{" "}
+          <a
+            href="https://x.com/lmon_25"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-neutral-300 underline-offset-2 hover:text-neutral-600 transition-colors"
+          >
+            Liam
+          </a>
+        </div>
       </div>
     </div>
   );
