@@ -75,25 +75,22 @@ export async function POST(request: NextRequest) {
 
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  // Create new resume and mark it as primary, unset old primary
-  const resume = await prisma.$transaction(async (tx) => {
-    // Unset any existing primary resume for this slug
-    await tx.resume.updateMany({
-      where: { userId, slug, isPrimary: true },
-      data: { isPrimary: false },
-    });
+  // Create new resume — only set as primary if no existing primary
+  const existingPrimary = await prisma.resume.findFirst({
+    where: { userId, slug, isPrimary: true },
+    select: { id: true },
+  });
 
-    return tx.resume.create({
-      data: {
-        userId,
-        slug,
-        displayName,
-        r2Key: "", // placeholder, will update after R2 upload
-        fileSize: file.size,
-        mimeType: file.type || "application/pdf",
-        isPrimary: true,
-      },
-    });
+  const resume = await prisma.resume.create({
+    data: {
+      userId,
+      slug,
+      displayName,
+      r2Key: "", // placeholder, will update after R2 upload
+      fileSize: file.size,
+      mimeType: file.type || "application/pdf",
+      isPrimary: !existingPrimary,
+    },
   });
 
   const r2Key = await uploadResume(userId, resume.id, buffer, displayName);
