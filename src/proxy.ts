@@ -1,22 +1,24 @@
+import { getSessionCookie } from "better-auth/cookies";
 import { NextRequest, NextResponse } from "next/server";
 
 async function getSession(request: NextRequest) {
-  const sessionToken = request.cookies.get("better-auth.session_token")?.value;
+  const sessionToken = getSessionCookie(request.headers);
 
   if (!sessionToken) return null;
 
-  const sessionRes = await fetch(
-    new URL("/api/auth/get-session", request.url),
-    {
+  try {
+    const sessionRes = await fetch(new URL("/api/auth/get-session", request.url), {
       headers: {
         cookie: request.headers.get("cookie") ?? "",
       },
-    },
-  );
+    });
 
-  if (!sessionRes.ok) return null;
+    if (!sessionRes.ok) return null;
 
-  return sessionRes.json();
+    return sessionRes.json();
+  } catch {
+    return null;
+  }
 }
 
 export async function proxy(request: NextRequest) {
