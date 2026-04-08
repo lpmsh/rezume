@@ -23,15 +23,9 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import {
-  Copy,
-  Check,
   Upload,
-  Trash2,
-  ExternalLink,
-  Eye,
   Pencil,
   FileText,
-  Star,
   Plus,
   Loader2,
 } from "lucide-react";
@@ -107,20 +101,15 @@ export default function DashboardPage() {
   if (resumes.length === 0) {
     return (
       <div className="w-full min-h-dvh flex flex-col items-center">
-        <div className="px-4 py-4 max-w-4xl w-full">
+        <div className="px-4 py-4 max-w-xl w-full">
           <DashboardHeader />
           <ShareLinkSection slug={slug} />
-          <div className="flex flex-col items-center justify-center pt-24 gap-4">
-            <div className="size-16 rounded-2xl bg-neutral-100 flex items-center justify-center">
-              <FileText className="size-8 text-neutral-400" />
-            </div>
-            <h2 className="text-xl text-black font-heading">
+          <div className="flex flex-col items-center justify-center pt-20 gap-3">
+            <FileText className="size-6 text-neutral-300" />
+            <p className="text-sm text-neutral-500">
               No resumes yet
-            </h2>
-            <p className="text-neutral-500 text-sm">
-              Upload your first resume to get started
             </p>
-            <Button onClick={() => setUploadOpen(true)}>Upload resume</Button>
+            <Button size="sm" onClick={() => setUploadOpen(true)}>Upload resume</Button>
           </div>
         </div>
 
@@ -140,20 +129,20 @@ export default function DashboardPage() {
 
   return (
     <div className="w-full min-h-dvh flex flex-col items-center">
-      <div className="px-4 py-4 max-w-4xl w-full">
+      <div className="px-4 py-4 max-w-xl w-full">
         <DashboardHeader />
         <ShareLinkSection slug={slug} />
 
-        <div className="pt-8">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="font-heading text-3xl text-black">Your Resumes</h1>
+        <div className="pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm font-medium text-neutral-500">Resumes</p>
             <Button size="sm" onClick={() => setUploadOpen(true)}>
               <Plus className="size-4 mr-1.5" />
-              Upload new
+              Upload
             </Button>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             {resumes.map((resume) => (
               <ResumeCard
                 key={resume.id}
@@ -170,8 +159,9 @@ export default function DashboardPage() {
         open={uploadOpen}
         onOpenChange={setUploadOpen}
         slug={slug}
-        onSuccess={() => {
+        onSuccess={(id) => {
           setUploadOpen(false);
+          setJustUploadedId(id);
           fetchData();
         }}
       />
@@ -188,16 +178,17 @@ function DashboardHeader() {
   }
 
   return (
-    <div className="w-full flex justify-between items-center h-fit">
-      <Link href="/home" className="flex items-center gap-x-3">
-        <div className="size-6 bg-violet-500 rounded-md" />
-        <h3 className="text-xl font-semibold text-black">Rezume</h3>
+    <div className="w-full flex justify-between items-center">
+      <Link href="/home" className="flex items-center gap-x-2">
+        <div className="size-5 bg-violet-500 rounded-md" />
+        <span className="text-sm font-semibold text-black">Rezume</span>
       </Link>
-      <div className="flex items-center gap-x-2">
-        <Button variant="ghost" size="sm" onClick={handleSignOut}>
-          Sign out
-        </Button>
-      </div>
+      <button
+        onClick={handleSignOut}
+        className="text-sm text-neutral-500 hover:text-black transition-colors"
+      >
+        Sign out
+      </button>
     </div>
   );
 }
@@ -213,27 +204,23 @@ function ShareLinkSection({ slug }: { slug: string }) {
   }
 
   return (
-    <div className="mt-8 rounded-xl border border-neutral-200 bg-white p-5">
-      <p className="text-sm font-medium text-neutral-500 mb-2">Your public link</p>
-      <div className="flex items-center gap-2">
-        <div className="flex-1 rounded-lg bg-neutral-50 border border-neutral-200 px-3 py-2 text-sm text-black font-medium truncate">
-          rezume.so/{slug}
-        </div>
-        <Button size="sm" variant="outline" onClick={handleCopy}>
-          {copied ? (
-            <Check className="size-4 mr-1.5 text-emerald-500" />
-          ) : (
-            <Copy className="size-4 mr-1.5" />
-          )}
-          {copied ? "Copied!" : "Copy"}
-        </Button>
-        <Link href={`/${slug}`} target="_blank">
-          <Button size="sm" variant="outline">
-            <ExternalLink className="size-4 mr-1.5" />
-            Visit
-          </Button>
-        </Link>
+    <div className="mt-6 flex items-center gap-2">
+      <div className="flex-1 flex items-center h-9 rounded-lg border border-neutral-200 px-3 text-sm text-black truncate">
+        rezume.so/{slug}
       </div>
+      <button
+        onClick={handleCopy}
+        className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
+      >
+        {copied ? "Copied" : "Copy"}
+      </button>
+      <Link
+        href={`/${slug}`}
+        target="_blank"
+        className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
+      >
+        Visit
+      </Link>
     </div>
   );
 }
@@ -482,22 +469,20 @@ function ResumeCard({
 
   return (
     <div
-      className={`rounded-xl border bg-white p-5 transition-colors hover:border-neutral-300 ${
-        resume.isPrimary
-          ? "border-violet-200 bg-violet-50/30"
-          : isJustUploaded
-            ? "border-emerald-200 bg-emerald-50/30"
-            : "border-neutral-200"
+      className={`rounded-lg border p-4 transition-colors ${
+        isJustUploaded
+          ? "border-emerald-200 bg-emerald-50/30"
+          : "border-neutral-200"
       }`}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
           {editing ? (
-            <div className="flex items-center gap-2 mb-1">
+            <>
               <Input
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="h-8 text-sm max-w-[260px]"
+                className="h-7 text-sm max-w-[200px]"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleSaveName();
@@ -507,56 +492,27 @@ function ResumeCard({
                   }
                 }}
               />
-              <Button size="sm" onClick={handleSaveName}>
-                Save
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  setEditing(false);
-                  setEditName(resume.displayName);
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
+              <button onClick={handleSaveName} className="text-xs text-violet-500 hover:text-violet-600">Save</button>
+              <button onClick={() => { setEditing(false); setEditName(resume.displayName); }} className="text-xs text-neutral-400 hover:text-neutral-600">Cancel</button>
+            </>
           ) : (
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-semibold text-black truncate">
-                {resume.displayName}
-              </h3>
+            <>
+              <span className="text-sm font-medium text-black truncate">{resume.displayName}</span>
               {resume.isPrimary && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-600">
-                  <Star className="size-3" />
-                  Primary
-                </span>
+                <span className="text-xs text-violet-500">primary</span>
               )}
               {isJustUploaded && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-600">
-                  <Upload className="size-3" />
-                  Just uploaded
-                </span>
+                <span className="text-xs text-emerald-500">just uploaded</span>
               )}
-              <button
-                onClick={() => setEditing(true)}
-                className="text-neutral-400 hover:text-neutral-600 transition-colors"
-              >
-                <Pencil className="size-3.5" />
+              <button onClick={() => setEditing(true)} className="text-neutral-300 hover:text-neutral-500 transition-colors">
+                <Pencil className="size-3" />
               </button>
-            </div>
+            </>
           )}
-          <p className="text-sm text-neutral-400">
-            {(resume.fileSize / 1024).toFixed(0)} KB
-          </p>
         </div>
 
-        <div className="flex items-center gap-4 text-sm text-neutral-500 shrink-0">
-          <div className="flex items-center gap-1.5">
-            <Eye className="size-4 text-neutral-400" />
-            <span>{resume.viewCount}</span>
-          </div>
-          <span className="text-neutral-300">·</span>
+        <div className="flex items-center gap-3 text-xs text-neutral-400 shrink-0">
+          <span>{resume.viewCount} views</span>
           <span>
             {new Date(resume.updatedAt).toLocaleDateString("en-US", {
               month: "short",
@@ -566,43 +522,31 @@ function ResumeCard({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 mt-4 pt-3 border-t border-neutral-100">
+      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-neutral-100 text-xs">
         {!resume.isPrimary && (
-          <Button size="sm" variant="ghost" onClick={handleSetPrimary}>
-            <Star className="size-4 mr-1.5" />
+          <button onClick={handleSetPrimary} className="text-neutral-500 hover:text-black transition-colors">
             Set as primary
-          </Button>
+          </button>
         )}
 
         {resume.isPrimary && (
-          <Button size="sm" variant="ghost" onClick={handleCopy}>
-            {copied ? (
-              <Check className="size-4 mr-1.5 text-emerald-500" />
-            ) : (
-              <Copy className="size-4 mr-1.5" />
-            )}
-            {copied ? "Copied!" : "Copy link"}
-          </Button>
+          <button onClick={handleCopy} className="text-neutral-500 hover:text-black transition-colors">
+            {copied ? "Copied" : "Copy link"}
+          </button>
         )}
 
-        <Button size="sm" variant="ghost" onClick={handlePreview}>
-          <Eye className="size-4 mr-1.5" />
+        <button onClick={handlePreview} className="text-neutral-500 hover:text-black transition-colors">
           Preview
-        </Button>
+        </button>
 
         <div className="flex-1" />
 
         <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <DialogTrigger
             render={
-              <Button
-                size="sm"
-                variant="ghost"
-                className="text-red-500 hover:text-red-600 hover:bg-red-50"
-              />
+              <button className="text-neutral-400 hover:text-red-500 transition-colors" />
             }
           >
-            <Trash2 className="size-4 mr-1.5" />
             Delete
           </DialogTrigger>
           <DialogContent>
