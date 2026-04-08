@@ -63,6 +63,7 @@ export default function DashboardPage() {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [justUploadedId, setJustUploadedId] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     const [userRes, resumesRes] = await Promise.all([
@@ -127,8 +128,9 @@ export default function DashboardPage() {
           open={uploadOpen}
           onOpenChange={setUploadOpen}
           slug={slug}
-          onSuccess={() => {
+          onSuccess={(id) => {
             setUploadOpen(false);
+            setJustUploadedId(id);
             fetchData();
           }}
         />
@@ -157,6 +159,7 @@ export default function DashboardPage() {
                 key={resume.id}
                 resume={resume}
                 onUpdate={fetchData}
+                isJustUploaded={resume.id === justUploadedId}
               />
             ))}
           </div>
@@ -244,7 +247,7 @@ function UploadDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   slug: string;
-  onSuccess: () => void;
+  onSuccess: (resumeId: string) => void;
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [displayName, setDisplayName] = useState("");
@@ -316,8 +319,9 @@ function UploadDialog({
       return;
     }
 
+    const data = await res.json();
     reset();
-    onSuccess();
+    onSuccess(data.resume.id);
   }
 
   return (
@@ -411,9 +415,11 @@ function UploadDialog({
 function ResumeCard({
   resume,
   onUpdate,
+  isJustUploaded,
 }: {
   resume: Resume;
   onUpdate: () => void;
+  isJustUploaded?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -477,7 +483,11 @@ function ResumeCard({
   return (
     <div
       className={`rounded-xl border bg-white p-5 transition-colors hover:border-neutral-300 ${
-        resume.isPrimary ? "border-violet-200 bg-violet-50/30" : "border-neutral-200"
+        resume.isPrimary
+          ? "border-violet-200 bg-violet-50/30"
+          : isJustUploaded
+            ? "border-emerald-200 bg-emerald-50/30"
+            : "border-neutral-200"
       }`}
     >
       <div className="flex items-start justify-between gap-4">
@@ -522,6 +532,12 @@ function ResumeCard({
                   Primary
                 </span>
               )}
+              {isJustUploaded && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-600">
+                  <Upload className="size-3" />
+                  Just uploaded
+                </span>
+              )}
               <button
                 onClick={() => setEditing(true)}
                 className="text-neutral-400 hover:text-neutral-600 transition-colors"
@@ -558,14 +574,16 @@ function ResumeCard({
           </Button>
         )}
 
-        <Button size="sm" variant="ghost" onClick={handleCopy}>
-          {copied ? (
-            <Check className="size-4 mr-1.5 text-emerald-500" />
-          ) : (
-            <Copy className="size-4 mr-1.5" />
-          )}
-          {copied ? "Copied!" : "Copy link"}
-        </Button>
+        {resume.isPrimary && (
+          <Button size="sm" variant="ghost" onClick={handleCopy}>
+            {copied ? (
+              <Check className="size-4 mr-1.5 text-emerald-500" />
+            ) : (
+              <Copy className="size-4 mr-1.5" />
+            )}
+            {copied ? "Copied!" : "Copy link"}
+          </Button>
+        )}
 
         <Button size="sm" variant="ghost" onClick={handlePreview}>
           <Eye className="size-4 mr-1.5" />
