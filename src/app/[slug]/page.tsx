@@ -7,9 +7,22 @@ import { headers } from "next/headers";
 import { ResumeViewer } from "./resume-viewer-loader";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const resume = await prisma.resume.findFirst({
+    where: { slug, namedSlug: null, isPublic: true, isPrimary: true },
+    select: { displayName: true },
+  });
+
+  return {
+    title: resume?.displayName ?? "Resume",
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function PublicResumePage({
   params,
