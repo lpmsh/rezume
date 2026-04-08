@@ -1,12 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -16,32 +13,10 @@ import {
 } from "@/components/ui/card";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    const { error: authError } = await authClient.signIn.email({
-      email,
-      password,
-    });
-
-    if (authError) {
-      setError(authError.message ?? "Failed to sign in");
-      setLoading(false);
-      return;
-    }
-
-    router.push("/app");
-  }
-
   async function handleGoogleSignIn() {
+    setLoading(true);
     await authClient.signIn.social({
       provider: "google",
       callbackURL: "/app",
@@ -54,7 +29,7 @@ export default function LoginPage() {
         <CardHeader>
           <CardTitle>Sign in to Rezume</CardTitle>
           <CardDescription>
-            Enter your email and password to continue
+            Continue with your Google account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -63,47 +38,13 @@ export default function LoginPage() {
               variant="ghost"
               className="w-full"
               onClick={handleGoogleSignIn}
+              disabled={loading}
             >
               <GoogleIcon />
-              <span className="ml-2">Continue with Google</span>
+              <span className="ml-2">
+                {loading ? "Redirecting..." : "Continue with Google"}
+              </span>
             </Button>
-
-            <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-neutral-200" />
-              <span className="text-xs text-neutral-400">or</span>
-              <div className="h-px flex-1 bg-neutral-200" />
-            </div>
-
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              {error && (
-                <p className="text-sm text-red-500">{error}</p>
-              )}
-              <Button type="submit" disabled={loading}>
-                {loading ? "Signing in..." : "Sign in"}
-              </Button>
-            </form>
 
             <p className="text-center text-sm text-neutral-500">
               Don&apos;t have an account?{" "}

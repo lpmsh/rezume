@@ -57,6 +57,7 @@ export default function DashboardPage() {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [justUploadedId, setJustUploadedId] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     const [userRes, resumesRes] = await Promise.all([
@@ -116,8 +117,9 @@ export default function DashboardPage() {
           open={uploadOpen}
           onOpenChange={setUploadOpen}
           slug={slug}
-          onSuccess={() => {
+          onSuccess={(id) => {
             setUploadOpen(false);
+            setJustUploadedId(id);
             fetchData();
           }}
         />
@@ -146,6 +148,7 @@ export default function DashboardPage() {
                 key={resume.id}
                 resume={resume}
                 onUpdate={fetchData}
+                isJustUploaded={resume.id === justUploadedId}
               />
             ))}
           </div>
@@ -156,8 +159,9 @@ export default function DashboardPage() {
         open={uploadOpen}
         onOpenChange={setUploadOpen}
         slug={slug}
-        onSuccess={() => {
+        onSuccess={(id) => {
           setUploadOpen(false);
+          setJustUploadedId(id);
           fetchData();
         }}
       />
@@ -230,7 +234,7 @@ function UploadDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   slug: string;
-  onSuccess: () => void;
+  onSuccess: (resumeId: string) => void;
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [displayName, setDisplayName] = useState("");
@@ -302,8 +306,9 @@ function UploadDialog({
       return;
     }
 
+    const data = await res.json();
     reset();
-    onSuccess();
+    onSuccess(data.resume.id);
   }
 
   return (
@@ -397,9 +402,11 @@ function UploadDialog({
 function ResumeCard({
   resume,
   onUpdate,
+  isJustUploaded,
 }: {
   resume: Resume;
   onUpdate: () => void;
+  isJustUploaded?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -461,7 +468,13 @@ function ResumeCard({
   }
 
   return (
-    <div className="rounded-lg border border-neutral-200 p-4">
+    <div
+      className={`rounded-lg border p-4 transition-colors ${
+        isJustUploaded
+          ? "border-emerald-200 bg-emerald-50/30"
+          : "border-neutral-200"
+      }`}
+    >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0">
           {editing ? (
@@ -488,6 +501,9 @@ function ResumeCard({
               {resume.isPrimary && (
                 <span className="text-xs text-violet-500">primary</span>
               )}
+              {isJustUploaded && (
+                <span className="text-xs text-emerald-500">just uploaded</span>
+              )}
               <button onClick={() => setEditing(true)} className="text-neutral-300 hover:text-neutral-500 transition-colors">
                 <Pencil className="size-3" />
               </button>
@@ -513,9 +529,11 @@ function ResumeCard({
           </button>
         )}
 
-        <button onClick={handleCopy} className="text-neutral-500 hover:text-black transition-colors">
-          {copied ? "Copied" : "Copy link"}
-        </button>
+        {resume.isPrimary && (
+          <button onClick={handleCopy} className="text-neutral-500 hover:text-black transition-colors">
+            {copied ? "Copied" : "Copy link"}
+          </button>
+        )}
 
         <button onClick={handlePreview} className="text-neutral-500 hover:text-black transition-colors">
           Preview
