@@ -3,16 +3,6 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { prisma } from "./prisma";
 
-const fallbackAuthUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
-const extraTrustedOrigins =
-  process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean) ?? [];
-const crossSubdomainCookieDomain =
-  process.env.BETTER_AUTH_COOKIE_DOMAIN?.trim() || undefined;
-const enableCrossSubdomainCookies =
-  !!crossSubdomainCookieDomain && process.env.VERCEL_ENV !== "preview";
-
 export const auth = betterAuth({
   baseURL: {
     allowedHosts: [
@@ -22,21 +12,11 @@ export const auth = betterAuth({
       "www.rezume.so",
       "*.vercel.app",
     ],
-    fallback: fallbackAuthUrl,
+    fallback: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   },
-  trustedOrigins:
-    extraTrustedOrigins.length > 0 ? extraTrustedOrigins : undefined,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  advanced: {
-    crossSubDomainCookies: enableCrossSubdomainCookies
-      ? {
-          enabled: true,
-          domain: crossSubdomainCookieDomain,
-        }
-      : undefined,
-  },
   emailAndPassword: {
     enabled: false,
   },

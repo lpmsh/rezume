@@ -43,4 +43,12 @@ yarn-error.log*
 next-env.d.ts
 
 /generated/prisma
+
+# ai/agent tooling
 .gstack/
+.agents/
+.claude/commands/
+.claude/skills/
+.context/
+openspec/
+skills-lock.json
