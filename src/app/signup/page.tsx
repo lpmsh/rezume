@@ -41,10 +41,21 @@ function SignupPageInner() {
   const [password, setPassword] = useState("");
   const [slug, setSlug] = useState(initialSlug);
   const { status: slugStatus, reason: slugReason } = useSlugCheck(slug);
+  const [lastMessage, setLastMessage] = useState<{ text: string; type: "available" | "unavailable" } | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const slugReady = slugStatus === "available";
+
+  // Track the last shown message so it persists during loading
+  if (slug.length >= 3 && slugStatus === "available") {
+    const text = `rezume.so/${slug} is available`;
+    if (lastMessage?.text !== text) setLastMessage({ text, type: "available" });
+  } else if (slug.length >= 3 && slugStatus === "unavailable" && slugReason) {
+    if (lastMessage?.text !== slugReason) setLastMessage({ text: slugReason, type: "unavailable" });
+  } else if (slug.length < 3 && lastMessage) {
+    setLastMessage(null);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -125,14 +136,24 @@ function SignupPageInner() {
                   </div>
                 )}
               </div>
-              {slug.length >= 3 && slugStatus === "available" && (
-                <p className="text-xs text-emerald-600">
-                  rezume.so/{slug} is available
-                </p>
-              )}
-              {slug.length >= 3 && slugStatus === "unavailable" && (
-                <p className="text-xs text-red-500">{slugReason}</p>
-              )}
+              <div
+                className="grid transition-[grid-template-rows] duration-200 ease-out"
+                style={{
+                  gridTemplateRows: lastMessage ? "1fr" : "0fr",
+                }}
+              >
+                <div className="overflow-hidden">
+                  <p
+                    className={`text-xs pt-1.5 ${
+                      lastMessage?.type === "available"
+                        ? "text-emerald-600"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {lastMessage?.text}
+                  </p>
+                </div>
+              </div>
             </div>
 
             <Button

@@ -55,9 +55,8 @@ export default async function PublicResumePage({
         displayName={resume.displayName}
         resumeId={resume.id}
       />
-      <div className="fixed right-4 bottom-4 z-10 rounded-full bg-white/90 px-3 py-1.5 text-xs text-muted-foreground shadow-sm ring-1 ring-black/5 backdrop-blur-sm">
-        Powered by{" "}
-        <a href="/" className="font-medium text-foreground/70 underline underline-offset-2 hover:text-foreground">
+      <div className="fixed right-4 bottom-4 z-10 text-xs text-neutral-400">
+        <a href="/" className="hover:text-neutral-600 transition-colors">
           rezume.so
         </a>
       </div>

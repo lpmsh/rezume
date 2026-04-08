@@ -1,7 +1,6 @@
 "use client";
 
 import { Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { PdfViewer } from "@/components/pdf-viewer";
 
 export function ResumeViewer({
@@ -21,12 +20,14 @@ export function ResumeViewer({
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex items-center justify-between px-5 py-2.5">
-        <h1 className="text-sm font-medium text-foreground">{displayName}</h1>
-        <Button size="sm" variant="ghost" onClick={handleDownload}>
-          <Download className="size-3.5" />
-          Download
-        </Button>
+      <header className="flex items-center justify-between px-4 py-2">
+        <span className="text-sm text-neutral-500">{displayName}</span>
+        <button
+          onClick={handleDownload}
+          className="text-neutral-400 hover:text-black transition-colors"
+        >
+          <Download className="size-4" />
+        </button>
       </header>
       <PdfViewer file={pdfUrl} />
     </div>
