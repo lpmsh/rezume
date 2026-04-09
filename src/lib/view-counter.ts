@@ -30,18 +30,35 @@ function isBot(userAgent: string): boolean {
   return BOT_PATTERNS.some((pattern) => ua.includes(pattern));
 }
 
+function parseReferrer(raw: string, requestHost: string): string {
+  if (!raw) return "direct";
+  try {
+    const url = new URL(raw);
+    if (url.hostname === requestHost || url.hostname === `www.${requestHost}`) {
+      return "direct";
+    }
+    return url.hostname;
+  } catch {
+    return "direct";
+  }
+}
+
 export async function trackView({
   resumeId,
   ownerId,
   viewerUserId,
   ip,
   userAgent,
+  referrer,
+  host,
 }: {
   resumeId: string;
   ownerId: string;
   viewerUserId?: string;
   ip: string;
   userAgent: string;
+  referrer: string;
+  host: string;
 }) {
   // Skip owner views
   if (viewerUserId && viewerUserId === ownerId) return;
@@ -69,6 +86,7 @@ export async function trackView({
         resumeId,
         ipHash,
         userAgent: userAgent.slice(0, 500),
+        referrer: parseReferrer(referrer, host).slice(0, 500),
       },
     }),
   ]);

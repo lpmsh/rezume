@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -28,8 +28,11 @@ import {
   FileText,
   Plus,
   Loader2,
+  Monitor,
+  Smartphone,
 } from "lucide-react";
 import { LazyPdfViewer } from "@/components/pdf-viewer-lazy";
+import { getSlugAnalytics, type AnalyticsData } from "./actions";
 import { QrCodeModal } from "@/components/qr-code-modal";
 
 type Resume = {
@@ -59,6 +62,31 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [justUploadedId, setJustUploadedId] = useState<string | null>(null);
+  const [analyticsOpen, setAnalyticsOpen] = useState(false);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [analyticsFilter, setAnalyticsFilter] = useState<string | null>(null);
+
+  async function handleOpenAnalytics(filterResumeId?: string) {
+    setAnalyticsOpen(true);
+    setAnalyticsLoading(true);
+    setAnalyticsFilter(filterResumeId ?? null);
+    const data = await getSlugAnalytics(filterResumeId);
+    if (data) {
+      setAnalyticsData(data);
+    }
+    setAnalyticsLoading(false);
+  }
+
+  async function handleFilterChange(filterResumeId: string | null) {
+    setAnalyticsLoading(true);
+    setAnalyticsFilter(filterResumeId);
+    const data = await getSlugAnalytics(filterResumeId ?? undefined);
+    if (data) {
+      setAnalyticsData(data);
+    }
+    setAnalyticsLoading(false);
+  }
 
   const fetchData = useCallback(async () => {
     const [userRes, resumesRes] = await Promise.all([
@@ -104,7 +132,7 @@ export default function DashboardPage() {
       <div className="w-full min-h-dvh flex flex-col items-center">
         <div className="px-4 py-4 max-w-xl w-full">
           <DashboardHeader />
-          <ShareLinkSection slug={slug} />
+          <ShareLinkSection slug={slug} onAnalyticsClick={() => handleOpenAnalytics()} />
           <div className="flex flex-col items-center justify-center pt-20 gap-3">
             <FileText className="size-6 text-neutral-300" />
             <p className="text-sm text-neutral-500">
@@ -124,6 +152,15 @@ export default function DashboardPage() {
             fetchData();
           }}
         />
+
+        <AnalyticsSheet
+          open={analyticsOpen}
+          onOpenChange={(open) => { setAnalyticsOpen(open); if (!open) setAnalyticsData(null); }}
+          loading={analyticsLoading}
+          data={analyticsData}
+          filter={analyticsFilter}
+          onFilterChange={handleFilterChange}
+        />
       </div>
     );
   }
@@ -132,7 +169,7 @@ export default function DashboardPage() {
     <div className="w-full min-h-dvh flex flex-col items-center">
       <div className="px-4 py-4 max-w-xl w-full">
         <DashboardHeader />
-        <ShareLinkSection slug={slug} />
+        <ShareLinkSection slug={slug} onAnalyticsClick={() => handleOpenAnalytics()} />
 
         <div className="pt-6">
           <div className="flex items-center justify-between mb-4">
@@ -166,6 +203,15 @@ export default function DashboardPage() {
           fetchData();
         }}
       />
+
+      <AnalyticsSheet
+        open={analyticsOpen}
+        onOpenChange={(open) => { setAnalyticsOpen(open); if (!open) setAnalyticsData(null); }}
+        loading={analyticsLoading}
+        data={analyticsData}
+        filter={analyticsFilter}
+        onFilterChange={handleFilterChange}
+      />
     </div>
   );
 }
@@ -194,7 +240,7 @@ function DashboardHeader() {
   );
 }
 
-function ShareLinkSection({ slug }: { slug: string }) {
+function ShareLinkSection({ slug, onAnalyticsClick }: { slug: string; onAnalyticsClick: () => void }) {
   const [copied, setCopied] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const url = `https://rezume.so/${slug}`;
@@ -206,29 +252,29 @@ function ShareLinkSection({ slug }: { slug: string }) {
   }
 
   return (
-    <div className="mt-6 flex items-center gap-2">
-      <div className="flex-1 flex items-center h-9 rounded-lg border border-neutral-200 px-3 text-sm text-black truncate">
-        rezume.so/{slug}
+    <div className="mt-6 flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <div className="flex-1 flex items-center h-9 rounded-lg border border-neutral-200 px-3 text-sm text-black truncate">
+          rezume.so/{slug}
+        </div>
+        <button
+          onClick={handleCopy}
+          className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
+        >
+          {copied ? "Copied" : "Copy"}
+        </button>
       </div>
-      <button
-        onClick={handleCopy}
-        className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
-      >
-        {copied ? "Copied" : "Copy"}
-      </button>
-      <Link
-        href={`/${slug}`}
-        target="_blank"
-        className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
-      >
-        Visit
-      </Link>
-      <button
-        onClick={() => setQrOpen(true)}
-        className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
-      >
-        QR Code
-      </button>
+      <div className="grid grid-cols-3 gap-2">
+        <Link href={`/${slug}`} target="_blank" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+          Visit
+        </Link>
+        <Button variant="ghost" size="sm" onClick={() => setQrOpen(true)}>
+          QR Code
+        </Button>
+        <Button variant="ghost" size="sm" onClick={onAnalyticsClick}>
+          Analytics
+        </Button>
+      </div>
       <QrCodeModal open={qrOpen} onOpenChange={setQrOpen} url={url} slug={slug} />
     </div>
   );
@@ -425,7 +471,6 @@ function ResumeCard({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
-
   const publicUrl = `rezume.so/${resume.slug}${resume.namedSlug ? `/${resume.namedSlug}` : ""}`;
 
   async function handleCopy() {
@@ -617,6 +662,218 @@ function ResumeCard({
           </div>
         </SheetContent>
       </Sheet>
+
+    </div>
+  );
+}
+
+const RESUME_COLORS = [
+  "bg-violet-400",
+  "bg-blue-400",
+  "bg-emerald-400",
+  "bg-amber-400",
+  "bg-rose-400",
+  "bg-cyan-400",
+];
+
+const RESUME_COLORS_HOVER = [
+  "group-hover/bar:bg-violet-500",
+  "group-hover/bar:bg-blue-500",
+  "group-hover/bar:bg-emerald-500",
+  "group-hover/bar:bg-amber-500",
+  "group-hover/bar:bg-rose-500",
+  "group-hover/bar:bg-cyan-500",
+];
+
+const RESUME_DOT_COLORS = [
+  "bg-violet-400",
+  "bg-blue-400",
+  "bg-emerald-400",
+  "bg-amber-400",
+  "bg-rose-400",
+  "bg-cyan-400",
+];
+
+function AnalyticsSheet({
+  open,
+  onOpenChange,
+  loading,
+  data,
+  filter,
+  onFilterChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  loading: boolean;
+  data: AnalyticsData | null;
+  filter: string | null;
+  onFilterChange: (resumeId: string | null) => void;
+}) {
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="data-[side=right]:sm:max-w-md w-full flex flex-col">
+        <SheetHeader>
+          <SheetTitle>Analytics</SheetTitle>
+        </SheetHeader>
+        <div className="flex-1 overflow-y-auto px-4 pb-4">
+          {loading ? (
+            <div className="flex items-center justify-center h-40">
+              <Loader2 className="size-6 animate-spin text-neutral-400" />
+            </div>
+          ) : data ? (
+            <AnalyticsContent data={data} filter={filter} onFilterChange={onFilterChange} />
+          ) : (
+            <div className="flex items-center justify-center h-40 text-neutral-400">
+              Failed to load analytics
+            </div>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+function AnalyticsContent({
+  data,
+  filter,
+  onFilterChange,
+}: {
+  data: AnalyticsData;
+  filter: string | null;
+  onFilterChange: (resumeId: string | null) => void;
+}) {
+  const maxDayCount = Math.max(...data.viewsPerDay.map((d) => d.count), 1);
+
+  // Build a stable color map for resumes
+  const resumeColorIndex = new Map<string, number>();
+  data.resumes.forEach((r, i) => {
+    resumeColorIndex.set(r.id, i % RESUME_COLORS.length);
+  });
+
+  // Stable ordering for stacked segments
+  const resumeOrder = data.resumes.map((r) => r.id);
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Filter */}
+      {data.resumes.length > 1 && (
+        <select
+          value={filter ?? ""}
+          onChange={(e) => onFilterChange(e.target.value || null)}
+          className="w-full h-9 rounded-lg border border-neutral-200 px-3 text-sm text-black bg-white"
+        >
+          <option value="">All resumes</option>
+          {data.resumes.map((r) => (
+            <option key={r.id} value={r.id}>{r.displayName}</option>
+          ))}
+        </select>
+      )}
+
+      {/* Stat boxes */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="rounded-lg border border-neutral-200 p-3 text-center">
+          <p className="text-2xl font-semibold text-black">{data.totalViews}</p>
+          <p className="text-xs text-neutral-500 mt-1">Total</p>
+        </div>
+        <div className="rounded-lg border border-neutral-200 p-3 text-center">
+          <p className="text-2xl font-semibold text-black">{data.last7Days}</p>
+          <p className="text-xs text-neutral-500 mt-1">Last 7 days</p>
+        </div>
+        <div className="rounded-lg border border-neutral-200 p-3 text-center">
+          <p className="text-2xl font-semibold text-black">{data.last30Days}</p>
+          <p className="text-xs text-neutral-500 mt-1">Last 30 days</p>
+        </div>
+      </div>
+
+      {/* Bar chart */}
+      <div>
+        <p className="text-sm font-medium text-neutral-700 mb-3">Views per day</p>
+        <div className="flex items-end gap-[2px] h-32">
+          {data.viewsPerDay.map((d) => (
+            <div
+              key={d.date}
+              className="flex-1 group/bar relative"
+              style={{ height: "100%" }}
+            >
+              {/* Stacked segments */}
+              <div className="absolute bottom-0 w-full flex flex-col-reverse">
+                {d.count === 0 ? (
+                  <div className="w-full h-[2px] rounded-sm bg-neutral-200" />
+                ) : (
+                  resumeOrder.map((resumeId) => {
+                    const segment = d.byResume.find((b) => b.resumeId === resumeId);
+                    if (!segment || segment.count === 0) return null;
+                    const colorIdx = resumeColorIndex.get(resumeId) ?? 0;
+                    const heightPct = (segment.count / maxDayCount) * 100;
+                    return (
+                      <div
+                        key={resumeId}
+                        className={`w-full first:rounded-b-sm last:rounded-t-sm ${RESUME_COLORS[colorIdx]} ${RESUME_COLORS_HOVER[colorIdx]} transition-colors`}
+                        style={{ height: `${(heightPct / 100) * 128}px` }}
+                      />
+                    );
+                  })
+                )}
+              </div>
+              {/* Tooltip */}
+              <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover/bar:block bg-neutral-800 text-white text-[10px] rounded px-1.5 py-0.5 whitespace-nowrap pointer-events-none z-10">
+                {d.date.slice(5)}: {d.count}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between text-[10px] text-neutral-400 mt-1">
+          <span>{data.viewsPerDay[0]?.date.slice(5)}</span>
+          <span>{data.viewsPerDay[data.viewsPerDay.length - 1]?.date.slice(5)}</span>
+        </div>
+
+        {/* Legend */}
+        {!filter && data.resumes.length > 1 && (
+          <div className="flex flex-wrap gap-3 mt-3">
+            {data.resumes.map((r) => {
+              const colorIdx = resumeColorIndex.get(r.id) ?? 0;
+              return (
+                <div key={r.id} className="flex items-center gap-1.5">
+                  <div className={`size-2.5 rounded-sm ${RESUME_DOT_COLORS[colorIdx]}`} />
+                  <span className="text-[11px] text-neutral-500 truncate max-w-[120px]">{r.displayName}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Top referrers */}
+      <div>
+        <p className="text-sm font-medium text-neutral-700 mb-3">Top referrers</p>
+        {data.topReferrers.length === 0 ? (
+          <p className="text-xs text-neutral-400">No data yet</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {data.topReferrers.map((r) => (
+              <div key={r.referrer} className="flex items-center justify-between text-sm">
+                <span className="text-neutral-700 truncate mr-2">{r.referrer}</span>
+                <span className="text-neutral-400 shrink-0">{r.count}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Device breakdown */}
+      <div>
+        <p className="text-sm font-medium text-neutral-700 mb-3">Devices (last 30 days)</p>
+        <div className="flex gap-4">
+          <div className="flex items-center gap-2">
+            <Monitor className="size-4 text-neutral-400" />
+            <span className="text-sm text-neutral-700">{data.deviceBreakdown.desktop} desktop</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Smartphone className="size-4 text-neutral-400" />
+            <span className="text-sm text-neutral-700">{data.deviceBreakdown.mobile} mobile</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

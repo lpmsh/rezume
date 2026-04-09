@@ -52,6 +52,8 @@ export default async function PublicResumePage({
 
   const ip = reqHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "";
   const userAgent = reqHeaders.get("user-agent") ?? "";
+  const referrer = reqHeaders.get("referer") ?? "";
+  const host = reqHeaders.get("host") ?? "rezume.so";
 
   trackView({
     resumeId: resume.id,
@@ -59,6 +61,8 @@ export default async function PublicResumePage({
     viewerUserId: session?.user?.id,
     ip,
     userAgent,
+    referrer,
+    host,
   });
 
   return (
