@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -28,7 +28,6 @@ import {
   FileText,
   Plus,
   Loader2,
-  BarChart3,
   Monitor,
   Smartphone,
 } from "lucide-react";
@@ -253,35 +252,29 @@ function ShareLinkSection({ slug, onAnalyticsClick }: { slug: string; onAnalytic
   }
 
   return (
-    <div className="mt-6 flex items-center gap-2">
-      <div className="flex-1 flex items-center h-9 rounded-lg border border-neutral-200 px-3 text-sm text-black truncate">
-        rezume.so/{slug}
+    <div className="mt-6 flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <div className="flex-1 flex items-center h-9 rounded-lg border border-neutral-200 px-3 text-sm text-black truncate">
+          rezume.so/{slug}
+        </div>
+        <button
+          onClick={handleCopy}
+          className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
+        >
+          {copied ? "Copied" : "Copy"}
+        </button>
       </div>
-      <button
-        onClick={handleCopy}
-        className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
-      >
-        {copied ? "Copied" : "Copy"}
-      </button>
-      <Link
-        href={`/${slug}`}
-        target="_blank"
-        className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
-      >
-        Visit
-      </Link>
-      <button
-        onClick={() => setQrOpen(true)}
-        className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
-      >
-        QR Code
-      </button>
-      <button
-        onClick={onAnalyticsClick}
-        className="shrink-0 text-neutral-500 hover:text-black transition-colors"
-      >
-        <BarChart3 className="size-4" />
-      </button>
+      <div className="grid grid-cols-3 gap-2">
+        <Link href={`/${slug}`} target="_blank" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+          Visit
+        </Link>
+        <Button variant="ghost" size="sm" onClick={() => setQrOpen(true)}>
+          QR Code
+        </Button>
+        <Button variant="ghost" size="sm" onClick={onAnalyticsClick}>
+          Analytics
+        </Button>
+      </div>
       <QrCodeModal open={qrOpen} onOpenChange={setQrOpen} url={url} slug={slug} />
     </div>
   );
