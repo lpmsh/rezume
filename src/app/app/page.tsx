@@ -647,7 +647,7 @@ function ResumeCard({
       >
         <SheetContent side="right" className="data-[side=right]:sm:max-w-md w-full flex flex-col">
           <SheetHeader>
-            <SheetTitle>Analytics &mdash; {resume.displayName}</SheetTitle>
+            <SheetTitle>Analytics {resume.displayName}</SheetTitle>
           </SheetHeader>
           <div className="flex-1 overflow-y-auto px-4 pb-4">
             {analyticsLoading ? (
@@ -692,7 +692,7 @@ function AnalyticsContent({ data }: { data: AnalyticsData }) {
       {/* Bar chart */}
       <div>
         <p className="text-sm font-medium text-neutral-700 mb-3">Views per day</p>
-        <div className="flex items-end gap-[2px] h-32">
+        <div className="flex items-end gap-[2px] h-32 overflow-hidden">
           {data.viewsPerDay.map((d) => (
             <div
               key={d.date}
