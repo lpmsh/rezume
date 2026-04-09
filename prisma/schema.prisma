@@ -90,5 +90,6 @@ model ResumeView {
   resume    Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   ipHash    String?
   userAgent String?
+  referrer  String?
   viewedAt  DateTime @default(now())
 }
