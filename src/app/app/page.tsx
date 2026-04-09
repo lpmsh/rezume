@@ -30,6 +30,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { LazyPdfViewer } from "@/components/pdf-viewer-lazy";
+import { QrCodeModal } from "@/components/qr-code-modal";
 
 type Resume = {
   id: string;
@@ -215,6 +216,7 @@ function ShareLinkSection({
   const [editingTagline, setEditingTagline] = useState(false);
   const [taglineValue, setTaglineValue] = useState(tagline ?? "");
   const [savingTagline, setSavingTagline] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
   const url = `https://rezume.so/${slug}`;
 
   async function handleCopy() {
@@ -304,6 +306,15 @@ function ShareLinkSection({
           </button>
         )}
       </div>
+      <div className="mt-3 flex items-center gap-3">
+        <button
+          onClick={() => setQrOpen(true)}
+          className="text-sm text-neutral-500 hover:text-black transition-colors"
+        >
+          QR Code
+        </button>
+      </div>
+      <QrCodeModal open={qrOpen} onOpenChange={setQrOpen} url={url} slug={slug} />
     </div>
   );
 }
