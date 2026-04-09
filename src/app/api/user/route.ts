@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { id: true, name: true, email: true, slug: true, tagline: true },
+    select: { id: true, name: true, email: true, image: true, slug: true, tagline: true, createdAt: true },
   });
 
   return NextResponse.json({ user });
@@ -50,7 +50,7 @@ export async function PATCH(request: NextRequest) {
   const user = await prisma.user.update({
     where: { id: session.user.id },
     data: { tagline: trimmed || null },
-    select: { id: true, name: true, email: true, slug: true, tagline: true },
+    select: { id: true, name: true, email: true, image: true, slug: true, tagline: true, createdAt: true },
   });
 
   return NextResponse.json({ user });

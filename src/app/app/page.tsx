@@ -31,6 +31,7 @@ import {
   Monitor,
   Smartphone,
 } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { LazyPdfViewer } from "@/components/pdf-viewer-lazy";
 import { getSlugAnalytics, type AnalyticsData } from "./actions";
 import { QrCodeModal } from "@/components/qr-code-modal";
@@ -52,8 +53,10 @@ type User = {
   id: string;
   name: string;
   email: string;
+  image: string | null;
   slug: string | null;
   tagline: string | null;
+  createdAt: string;
 };
 
 export default function DashboardPage() {
@@ -63,6 +66,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [justUploadedId, setJustUploadedId] = useState<string | null>(null);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
@@ -132,11 +136,9 @@ export default function DashboardPage() {
     return (
       <div className="w-full min-h-dvh flex flex-col items-center">
         <div className="px-4 py-4 max-w-xl w-full">
-          <DashboardHeader />
+          <DashboardHeader user={user} onProfileClick={() => setProfileOpen(true)} />
           <ShareLinkSection
             slug={slug}
-            tagline={user.tagline}
-            onTaglineUpdate={(t) => setUser((u) => u ? { ...u, tagline: t } : u)}
             onAnalyticsClick={() => handleOpenAnalytics()}
           />
           <div className="flex flex-col items-center justify-center pt-20 gap-3">
@@ -167,6 +169,13 @@ export default function DashboardPage() {
           filter={analyticsFilter}
           onFilterChange={handleFilterChange}
         />
+
+        <ProfileSheet
+          open={profileOpen}
+          onOpenChange={setProfileOpen}
+          user={user}
+          onTaglineUpdate={(t) => setUser((u) => u ? { ...u, tagline: t } : u)}
+        />
       </div>
     );
   }
@@ -174,11 +183,9 @@ export default function DashboardPage() {
   return (
     <div className="w-full min-h-dvh flex flex-col items-center">
       <div className="px-4 py-4 max-w-xl w-full">
-        <DashboardHeader />
+        <DashboardHeader user={user} onProfileClick={() => setProfileOpen(true)} />
         <ShareLinkSection
           slug={slug}
-          tagline={user.tagline}
-          onTaglineUpdate={(t) => setUser((u) => u ? { ...u, tagline: t } : u)}
           onAnalyticsClick={() => handleOpenAnalytics()}
         />
 
@@ -223,11 +230,18 @@ export default function DashboardPage() {
         filter={analyticsFilter}
         onFilterChange={handleFilterChange}
       />
+
+      <ProfileSheet
+        open={profileOpen}
+        onOpenChange={setProfileOpen}
+        user={user}
+        onTaglineUpdate={(t) => setUser((u) => u ? { ...u, tagline: t } : u)}
+      />
     </div>
   );
 }
 
-function DashboardHeader() {
+function DashboardHeader({ user, onProfileClick }: { user: User; onProfileClick: () => void }) {
   const router = useRouter();
 
   async function handleSignOut() {
@@ -241,31 +255,26 @@ function DashboardHeader() {
         <div className="size-5 bg-violet-500 rounded-md" />
         <span className="text-sm font-semibold text-black">Rezume</span>
       </Link>
-      <button
-        onClick={handleSignOut}
-        className="text-sm text-neutral-500 hover:text-black transition-colors"
-      >
-        Sign out
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={handleSignOut}
+          className="text-sm text-neutral-500 hover:text-black transition-colors"
+        >
+          Sign out
+        </button>
+        <button onClick={onProfileClick} className="rounded-full transition-opacity hover:opacity-80">
+          <Avatar className="size-7">
+            {user.image && <AvatarImage src={user.image} alt={user.name} />}
+            <AvatarFallback className="text-xs">{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
+        </button>
+      </div>
     </div>
   );
 }
 
-function ShareLinkSection({
-  slug,
-  tagline,
-  onTaglineUpdate,
-  onAnalyticsClick,
-}: {
-  slug: string;
-  tagline: string | null;
-  onTaglineUpdate: (tagline: string | null) => void;
-  onAnalyticsClick: () => void;
-}) {
+function ShareLinkSection({ slug, onAnalyticsClick }: { slug: string; onAnalyticsClick: () => void }) {
   const [copied, setCopied] = useState(false);
-  const [editingTagline, setEditingTagline] = useState(false);
-  const [taglineValue, setTaglineValue] = useState(tagline ?? "");
-  const [savingTagline, setSavingTagline] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const url = `https://rezume.so/${slug}`;
 
@@ -273,21 +282,6 @@ function ShareLinkSection({
     await navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }
-
-  async function handleSaveTagline() {
-    setSavingTagline(true);
-    const res = await fetch("/api/user", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tagline: taglineValue || null }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      onTaglineUpdate(data.user.tagline);
-      setEditingTagline(false);
-    }
-    setSavingTagline(false);
   }
 
   return (
@@ -304,52 +298,6 @@ function ShareLinkSection({
         </button>
       </div>
 
-      <div>
-        {editingTagline ? (
-          <div className="flex items-center gap-2">
-            <Input
-              value={taglineValue}
-              onChange={(e) => setTaglineValue(e.target.value)}
-              placeholder="e.g. Software Engineer · SF"
-              className="h-8 text-sm flex-1"
-              maxLength={120}
-              autoFocus
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSaveTagline();
-                if (e.key === "Escape") {
-                  setEditingTagline(false);
-                  setTaglineValue(tagline ?? "");
-                }
-              }}
-            />
-            <button
-              onClick={handleSaveTagline}
-              disabled={savingTagline}
-              className="text-xs text-violet-500 hover:text-violet-600"
-            >
-              {savingTagline ? "Saving..." : "Save"}
-            </button>
-            <button
-              onClick={() => {
-                setEditingTagline(false);
-                setTaglineValue(tagline ?? "");
-              }}
-              className="text-xs text-neutral-400 hover:text-neutral-600"
-            >
-              Cancel
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setEditingTagline(true)}
-            className="flex items-center gap-1.5 text-sm text-neutral-400 hover:text-neutral-600 transition-colors"
-          >
-            <Pencil className="size-3" />
-            {tagline ?? "Add a tagline for link previews"}
-          </button>
-        )}
-      </div>
-
       <div className="grid grid-cols-3 gap-2">
         <Link href={`/${slug}`} target="_blank" className={buttonVariants({ variant: "ghost", size: "sm" })}>
           Visit
@@ -363,6 +311,118 @@ function ShareLinkSection({
       </div>
       <QrCodeModal open={qrOpen} onOpenChange={setQrOpen} url={url} slug={slug} />
     </div>
+  );
+}
+
+function ProfileSheet({
+  open,
+  onOpenChange,
+  user,
+  onTaglineUpdate,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  user: User;
+  onTaglineUpdate: (tagline: string | null) => void;
+}) {
+  const [editingTagline, setEditingTagline] = useState(false);
+  const [taglineValue, setTaglineValue] = useState(user.tagline ?? "");
+  const [savingTagline, setSavingTagline] = useState(false);
+
+  async function handleSaveTagline() {
+    setSavingTagline(true);
+    const res = await fetch("/api/user", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tagline: taglineValue || null }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      onTaglineUpdate(data.user.tagline);
+      setEditingTagline(false);
+    }
+    setSavingTagline(false);
+  }
+
+  const memberSince = new Date(user.createdAt).toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="data-[side=right]:sm:max-w-sm w-full flex flex-col">
+        <SheetHeader>
+          <SheetTitle>Profile</SheetTitle>
+        </SheetHeader>
+        <div className="flex-1 overflow-y-auto px-4 pb-4">
+          <div className="flex flex-col items-center gap-3 pt-4 pb-6">
+            <Avatar className="size-16">
+              {user.image && <AvatarImage src={user.image} alt={user.name} />}
+              <AvatarFallback className="text-xl">{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <div className="text-center">
+              <p className="font-medium text-black">{user.name}</p>
+              <p className="text-sm text-neutral-500">{user.email}</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <Label className="text-xs text-neutral-400">Link preview tagline</Label>
+              {editingTagline ? (
+                <div className="flex items-center gap-2 mt-1">
+                  <Input
+                    value={taglineValue}
+                    onChange={(e) => setTaglineValue(e.target.value)}
+                    placeholder="e.g. Software Engineer · SF"
+                    className="h-8 text-sm flex-1"
+                    maxLength={120}
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSaveTagline();
+                      if (e.key === "Escape") {
+                        setEditingTagline(false);
+                        setTaglineValue(user.tagline ?? "");
+                      }
+                    }}
+                  />
+                  <button
+                    onClick={handleSaveTagline}
+                    disabled={savingTagline}
+                    className="text-xs text-violet-500 hover:text-violet-600"
+                  >
+                    {savingTagline ? "Saving..." : "Save"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditingTagline(false);
+                      setTaglineValue(user.tagline ?? "");
+                    }}
+                    className="text-xs text-neutral-400 hover:text-neutral-600"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setEditingTagline(true)}
+                  className="flex items-center gap-1.5 mt-1 text-sm text-neutral-600 hover:text-black transition-colors"
+                >
+                  <Pencil className="size-3" />
+                  {user.tagline ?? "Add a tagline"}
+                </button>
+              )}
+            </div>
+
+            <div>
+              <Label className="text-xs text-neutral-400">Member since</Label>
+              <p className="text-sm text-neutral-600 mt-1">{memberSince}</p>
+            </div>
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
