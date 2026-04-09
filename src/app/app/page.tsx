@@ -242,33 +242,18 @@ export default function DashboardPage() {
 }
 
 function DashboardHeader({ user, onProfileClick }: { user: User; onProfileClick: () => void }) {
-  const router = useRouter();
-
-  async function handleSignOut() {
-    await authClient.signOut();
-    router.push("/");
-  }
-
   return (
     <div className="w-full flex justify-between items-center">
       <Link href="/home" className="flex items-center gap-x-2">
         <div className="size-5 bg-violet-500 rounded-md" />
         <span className="text-sm font-semibold text-black">Rezume</span>
       </Link>
-      <div className="flex items-center gap-3">
-        <button
-          onClick={handleSignOut}
-          className="text-sm text-neutral-500 hover:text-black transition-colors"
-        >
-          Sign out
-        </button>
-        <button onClick={onProfileClick} className="rounded-full transition-opacity hover:opacity-80">
-          <Avatar className="size-7">
-            {user.image && <AvatarImage src={user.image} alt={user.name} />}
-            <AvatarFallback className="text-xs">{user.name.charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
-        </button>
-      </div>
+      <button onClick={onProfileClick} className="rounded-full transition-opacity hover:opacity-80">
+        <Avatar className="size-7">
+          {user.image && <AvatarImage src={user.image} alt={user.name} />}
+          <AvatarFallback className="text-xs">{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+        </Avatar>
+      </button>
     </div>
   );
 }
@@ -325,9 +310,15 @@ function ProfileSheet({
   user: User;
   onTaglineUpdate: (tagline: string | null) => void;
 }) {
+  const router = useRouter();
   const [editingTagline, setEditingTagline] = useState(false);
   const [taglineValue, setTaglineValue] = useState(user.tagline ?? "");
   const [savingTagline, setSavingTagline] = useState(false);
+
+  async function handleSignOut() {
+    await authClient.signOut();
+    router.push("/");
+  }
 
   async function handleSaveTagline() {
     setSavingTagline(true);
@@ -420,6 +411,14 @@ function ProfileSheet({
               <p className="text-sm text-neutral-600 mt-1">{memberSince}</p>
             </div>
           </div>
+        </div>
+        <div className="border-t px-4 py-4">
+          <button
+            onClick={handleSignOut}
+            className="text-sm text-neutral-500 hover:text-black transition-colors"
+          >
+            Sign out
+          </button>
         </div>
       </SheetContent>
     </Sheet>
