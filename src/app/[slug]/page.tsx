@@ -21,15 +21,15 @@ export async function generateMetadata({
     },
   });
 
-  const title = resume?.displayName ?? "Resume";
+  const name = resume?.user?.name ?? resume?.displayName ?? "Resume";
   const description =
-    resume?.user?.tagline ?? `${resume?.displayName}'s resume on Rezume`;
+    resume?.user?.tagline ?? `${name}'s resume on Rezume`;
 
   return {
-    title,
+    title: name,
     description,
     openGraph: {
-      title,
+      title: name,
       description: resume?.user?.tagline ?? "View resume on Rezume",
       images: [
         {
