@@ -49,6 +49,7 @@ type User = {
   name: string;
   email: string;
   slug: string | null;
+  tagline: string | null;
 };
 
 export default function DashboardPage() {
@@ -103,7 +104,11 @@ export default function DashboardPage() {
       <div className="w-full min-h-dvh flex flex-col items-center">
         <div className="px-4 py-4 max-w-xl w-full">
           <DashboardHeader />
-          <ShareLinkSection slug={slug} />
+          <ShareLinkSection
+            slug={slug}
+            tagline={user.tagline}
+            onTaglineUpdate={(t) => setUser((u) => u ? { ...u, tagline: t } : u)}
+          />
           <div className="flex flex-col items-center justify-center pt-20 gap-3">
             <FileText className="size-6 text-neutral-300" />
             <p className="text-sm text-neutral-500">
@@ -131,7 +136,11 @@ export default function DashboardPage() {
     <div className="w-full min-h-dvh flex flex-col items-center">
       <div className="px-4 py-4 max-w-xl w-full">
         <DashboardHeader />
-        <ShareLinkSection slug={slug} />
+        <ShareLinkSection
+            slug={slug}
+            tagline={user.tagline}
+            onTaglineUpdate={(t) => setUser((u) => u ? { ...u, tagline: t } : u)}
+          />
 
         <div className="pt-6">
           <div className="flex items-center justify-between mb-4">
@@ -193,8 +202,19 @@ function DashboardHeader() {
   );
 }
 
-function ShareLinkSection({ slug }: { slug: string }) {
+function ShareLinkSection({
+  slug,
+  tagline,
+  onTaglineUpdate,
+}: {
+  slug: string;
+  tagline: string | null;
+  onTaglineUpdate: (tagline: string | null) => void;
+}) {
   const [copied, setCopied] = useState(false);
+  const [editingTagline, setEditingTagline] = useState(false);
+  const [taglineValue, setTaglineValue] = useState(tagline ?? "");
+  const [savingTagline, setSavingTagline] = useState(false);
   const url = `https://rezume.so/${slug}`;
 
   async function handleCopy() {
@@ -203,24 +223,87 @@ function ShareLinkSection({ slug }: { slug: string }) {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  async function handleSaveTagline() {
+    setSavingTagline(true);
+    const res = await fetch("/api/user", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tagline: taglineValue || null }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      onTaglineUpdate(data.user.tagline);
+      setEditingTagline(false);
+    }
+    setSavingTagline(false);
+  }
+
   return (
-    <div className="mt-6 flex items-center gap-2">
-      <div className="flex-1 flex items-center h-9 rounded-lg border border-neutral-200 px-3 text-sm text-black truncate">
-        rezume.so/{slug}
+    <div className="mt-6">
+      <div className="flex items-center gap-2">
+        <div className="flex-1 flex items-center h-9 rounded-lg border border-neutral-200 px-3 text-sm text-black truncate">
+          rezume.so/{slug}
+        </div>
+        <button
+          onClick={handleCopy}
+          className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
+        >
+          {copied ? "Copied" : "Copy"}
+        </button>
+        <Link
+          href={`/${slug}`}
+          target="_blank"
+          className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
+        >
+          Visit
+        </Link>
       </div>
-      <button
-        onClick={handleCopy}
-        className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
-      >
-        {copied ? "Copied" : "Copy"}
-      </button>
-      <Link
-        href={`/${slug}`}
-        target="_blank"
-        className="shrink-0 text-sm text-neutral-500 hover:text-black transition-colors"
-      >
-        Visit
-      </Link>
+
+      <div className="mt-3">
+        {editingTagline ? (
+          <div className="flex items-center gap-2">
+            <Input
+              value={taglineValue}
+              onChange={(e) => setTaglineValue(e.target.value)}
+              placeholder="e.g. Software Engineer · SF"
+              className="h-8 text-sm flex-1"
+              maxLength={120}
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSaveTagline();
+                if (e.key === "Escape") {
+                  setEditingTagline(false);
+                  setTaglineValue(tagline ?? "");
+                }
+              }}
+            />
+            <button
+              onClick={handleSaveTagline}
+              disabled={savingTagline}
+              className="text-xs text-violet-500 hover:text-violet-600"
+            >
+              {savingTagline ? "Saving..." : "Save"}
+            </button>
+            <button
+              onClick={() => {
+                setEditingTagline(false);
+                setTaglineValue(tagline ?? "");
+              }}
+              className="text-xs text-neutral-400 hover:text-neutral-600"
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setEditingTagline(true)}
+            className="flex items-center gap-1.5 text-sm text-neutral-400 hover:text-neutral-600 transition-colors"
+          >
+            <Pencil className="size-3" />
+            {tagline ?? "Add a tagline for link previews"}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

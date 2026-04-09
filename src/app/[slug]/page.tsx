@@ -15,11 +15,33 @@ export async function generateMetadata({
   const { slug } = await params;
   const resume = await prisma.resume.findFirst({
     where: { slug, namedSlug: null, isPublic: true, isPrimary: true },
-    select: { displayName: true },
+    select: {
+      displayName: true,
+      user: { select: { name: true, tagline: true } },
+    },
   });
 
+  const title = resume?.displayName ?? "Resume";
+  const description =
+    resume?.user?.tagline ?? `${resume?.displayName}'s resume on Rezume`;
+
   return {
-    title: resume?.displayName ?? "Resume",
+    title,
+    description,
+    openGraph: {
+      title,
+      description: resume?.user?.tagline ?? "View resume on Rezume",
+      images: [
+        {
+          url: `/api/og/${slug}`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+    },
     robots: { index: false, follow: false },
   };
 }
