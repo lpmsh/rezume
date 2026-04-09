@@ -17,10 +17,12 @@ export function QrCodeModal({
   open,
   onOpenChange,
   url,
+  slug,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   url: string;
+  slug: string;
 }) {
   const [pngDataUrl, setPngDataUrl] = useState<string | null>(null);
   const [svgString, setSvgString] = useState<string | null>(null);
@@ -60,7 +62,7 @@ export function QrCodeModal({
     const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = blobUrl;
-    a.download = "rezume-qr.svg";
+    a.download = `rezume-qr-${slug}.svg`;
     a.click();
     URL.revokeObjectURL(blobUrl);
   }
@@ -78,8 +80,7 @@ export function QrCodeModal({
 
         <div className="flex items-center justify-center py-2">
           {pngDataUrl ? (
-            {/* eslint-disable-next-line @next/next/no-img-element -- data URL, not a remote image */}
-            <img
+            <img // eslint-disable-line @next/next/no-img-element -- data URL, not a remote image
               src={pngDataUrl}
               alt="QR code"
               className="w-48 h-48"
@@ -92,7 +93,7 @@ export function QrCodeModal({
         <DialogFooter>
           <a
             href={pngDataUrl ?? undefined}
-            download="rezume-qr.png"
+            download={`rezume-qr-${slug}.png`}
             className={!pngDataUrl ? "pointer-events-none opacity-50" : ""}
           >
             <Button variant="outline" disabled={!pngDataUrl}>

@@ -229,7 +229,7 @@ function ShareLinkSection({ slug }: { slug: string }) {
       >
         QR Code
       </button>
-      <QrCodeModal open={qrOpen} onOpenChange={setQrOpen} url={url} />
+      <QrCodeModal open={qrOpen} onOpenChange={setQrOpen} url={url} slug={slug} />
     </div>
   );
 }
