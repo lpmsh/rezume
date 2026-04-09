@@ -28,6 +28,9 @@ import {
   FileText,
   Plus,
   Loader2,
+  BarChart3,
+  Monitor,
+  Smartphone,
 } from "lucide-react";
 import { LazyPdfViewer } from "@/components/pdf-viewer-lazy";
 
@@ -42,6 +45,15 @@ type Resume = {
   viewCount: number;
   createdAt: string;
   updatedAt: string;
+};
+
+type AnalyticsData = {
+  totalViews: number;
+  last7Days: number;
+  last30Days: number;
+  viewsPerDay: Array<{ date: string; count: number }>;
+  topReferrers: Array<{ referrer: string; count: number }>;
+  deviceBreakdown: { mobile: number; desktop: number };
 };
 
 type User = {
@@ -416,6 +428,9 @@ function ResumeCard({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [analyticsOpen, setAnalyticsOpen] = useState(false);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
 
   const publicUrl = `rezume.so/${resume.slug}${resume.namedSlug ? `/${resume.namedSlug}` : ""}`;
 
@@ -435,6 +450,16 @@ function ResumeCard({
       setPreviewUrl(dataUrl);
     }
     setPreviewLoading(false);
+  }
+
+  async function handleAnalytics() {
+    setAnalyticsOpen(true);
+    setAnalyticsLoading(true);
+    const res = await fetch(`/api/resumes/${resume.id}/analytics`);
+    if (res.ok) {
+      setAnalyticsData(await res.json());
+    }
+    setAnalyticsLoading(false);
   }
 
   async function handleSaveName() {
@@ -539,6 +564,10 @@ function ResumeCard({
           Preview
         </button>
 
+        <button onClick={handleAnalytics} className="text-neutral-500 hover:text-black transition-colors">
+          Analytics
+        </button>
+
         <div className="flex-1" />
 
         <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
@@ -608,6 +637,117 @@ function ResumeCard({
           </div>
         </SheetContent>
       </Sheet>
+
+      <Sheet
+        open={analyticsOpen}
+        onOpenChange={(open) => {
+          setAnalyticsOpen(open);
+          if (!open) setAnalyticsData(null);
+        }}
+      >
+        <SheetContent side="right" className="data-[side=right]:sm:max-w-md w-full flex flex-col">
+          <SheetHeader>
+            <SheetTitle>Analytics &mdash; {resume.displayName}</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
+            {analyticsLoading ? (
+              <div className="flex items-center justify-center h-40">
+                <Loader2 className="size-6 animate-spin text-neutral-400" />
+              </div>
+            ) : analyticsData ? (
+              <AnalyticsContent data={analyticsData} />
+            ) : (
+              <div className="flex items-center justify-center h-40 text-neutral-400">
+                Failed to load analytics
+              </div>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+}
+
+function AnalyticsContent({ data }: { data: AnalyticsData }) {
+  const maxDayCount = Math.max(...data.viewsPerDay.map((d) => d.count), 1);
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Stat boxes */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="rounded-lg border border-neutral-200 p-3 text-center">
+          <p className="text-2xl font-semibold text-black">{data.totalViews}</p>
+          <p className="text-xs text-neutral-500 mt-1">Total</p>
+        </div>
+        <div className="rounded-lg border border-neutral-200 p-3 text-center">
+          <p className="text-2xl font-semibold text-black">{data.last7Days}</p>
+          <p className="text-xs text-neutral-500 mt-1">Last 7 days</p>
+        </div>
+        <div className="rounded-lg border border-neutral-200 p-3 text-center">
+          <p className="text-2xl font-semibold text-black">{data.last30Days}</p>
+          <p className="text-xs text-neutral-500 mt-1">Last 30 days</p>
+        </div>
+      </div>
+
+      {/* Bar chart */}
+      <div>
+        <p className="text-sm font-medium text-neutral-700 mb-3">Views per day</p>
+        <div className="flex items-end gap-[2px] h-32">
+          {data.viewsPerDay.map((d) => (
+            <div
+              key={d.date}
+              className="flex-1 group relative"
+              style={{ height: "100%" }}
+            >
+              <div
+                className="absolute bottom-0 w-full rounded-sm bg-violet-400 transition-colors group-hover:bg-violet-500"
+                style={{
+                  height: d.count === 0 ? "2px" : `${(d.count / maxDayCount) * 100}%`,
+                }}
+              />
+              <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:block bg-neutral-800 text-white text-[10px] rounded px-1.5 py-0.5 whitespace-nowrap pointer-events-none">
+                {d.date.slice(5)}: {d.count}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between text-[10px] text-neutral-400 mt-1">
+          <span>{data.viewsPerDay[0]?.date.slice(5)}</span>
+          <span>{data.viewsPerDay[data.viewsPerDay.length - 1]?.date.slice(5)}</span>
+        </div>
+      </div>
+
+      {/* Top referrers */}
+      <div>
+        <p className="text-sm font-medium text-neutral-700 mb-3">Top referrers</p>
+        {data.topReferrers.length === 0 ? (
+          <p className="text-xs text-neutral-400">No data yet</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {data.topReferrers.map((r) => (
+              <div key={r.referrer} className="flex items-center justify-between text-sm">
+                <span className="text-neutral-700 truncate mr-2">{r.referrer}</span>
+                <span className="text-neutral-400 shrink-0">{r.count}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Device breakdown */}
+      <div>
+        <p className="text-sm font-medium text-neutral-700 mb-3">Devices (last 30 days)</p>
+        <div className="flex gap-4">
+          <div className="flex items-center gap-2">
+            <Monitor className="size-4 text-neutral-400" />
+            <span className="text-sm text-neutral-700">{data.deviceBreakdown.desktop} desktop</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Smartphone className="size-4 text-neutral-400" />
+            <span className="text-sm text-neutral-700">{data.deviceBreakdown.mobile} mobile</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
