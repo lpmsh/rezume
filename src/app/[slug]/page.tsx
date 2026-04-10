@@ -41,6 +41,9 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
+      title: name,
+      description: resume?.user?.tagline ?? "View resume on Rezume",
+      images: [`/api/og/${slug}`],
     },
     robots: { index: false, follow: false },
   };
