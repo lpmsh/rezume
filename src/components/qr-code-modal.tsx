@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function QrCodeModal({
   open,
@@ -94,9 +95,12 @@ export function QrCodeModal({
           <a
             href={pngDataUrl ?? undefined}
             download={`rezume-qr-${slug}.png`}
-            className={!pngDataUrl ? "pointer-events-none opacity-50" : ""}
+            className={cn(
+              "w-full sm:w-auto",
+              !pngDataUrl && "pointer-events-none opacity-50"
+            )}
           >
-            <Button variant="outline" disabled={!pngDataUrl}>
+            <Button variant="outline" className="w-full sm:w-auto" disabled={!pngDataUrl}>
               <Download className="size-4 mr-1.5" />
               PNG
             </Button>
