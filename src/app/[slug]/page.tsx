@@ -45,6 +45,9 @@ export async function generateMetadata({
       description: resume?.user?.tagline ?? "View resume on Rezume",
       images: [`/api/og/${slug}`],
     },
+    alternates: {
+      canonical: `https://www.rezume.so/${slug}`,
+    },
     robots: { index: false, follow: false },
   };
 }

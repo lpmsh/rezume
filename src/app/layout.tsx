@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   title: "Rezume - Your resume, one link",
   description:
     "Upload a PDF, claim your slug, share a permanent link. Update your resume, same URL, always.",
+  alternates: {
+    canonical: "https://www.rezume.so",
+  },
 };
 
 export default function RootLayout({
