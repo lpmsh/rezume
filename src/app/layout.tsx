@@ -10,6 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.rezume.so"),
   title: "Rezume - Your resume, one link",
   description:
     "Upload a PDF, claim your slug, share a permanent link. Update your resume, same URL, always.",
