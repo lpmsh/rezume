@@ -273,7 +273,7 @@ function ShareLinkSection({ slug, onAnalyticsClick }: { slug: string; onAnalytic
     <div className="mt-6 flex flex-col gap-2">
       <div className="flex items-center gap-2">
         <div className="flex-1 flex items-center h-9 rounded-lg border border-neutral-200 px-3 text-sm text-black truncate">
-          www.rezume.so/{slug}
+          rezume.so/{slug}
         </div>
         <button
           onClick={handleCopy}
