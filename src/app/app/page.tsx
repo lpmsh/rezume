@@ -261,7 +261,7 @@ function DashboardHeader({ user, onProfileClick }: { user: User; onProfileClick:
 function ShareLinkSection({ slug, onAnalyticsClick }: { slug: string; onAnalyticsClick: () => void }) {
   const [copied, setCopied] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
-  const url = `https://rezume.so/${slug}`;
+  const url = `https://www.rezume.so/${slug}`;
 
   async function handleCopy() {
     await navigator.clipboard.writeText(url);
@@ -273,7 +273,7 @@ function ShareLinkSection({ slug, onAnalyticsClick }: { slug: string; onAnalytic
     <div className="mt-6 flex flex-col gap-2">
       <div className="flex items-center gap-2">
         <div className="flex-1 flex items-center h-9 rounded-lg border border-neutral-200 px-3 text-sm text-black truncate">
-          rezume.so/{slug}
+          www.rezume.so/{slug}
         </div>
         <button
           onClick={handleCopy}
@@ -616,7 +616,7 @@ function ResumeCard({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
-  const publicUrl = `rezume.so/${resume.slug}${resume.namedSlug ? `/${resume.namedSlug}` : ""}`;
+  const publicUrl = `www.rezume.so/${resume.slug}${resume.namedSlug ? `/${resume.namedSlug}` : ""}`;
 
   async function handleCopy() {
     await navigator.clipboard.writeText(`https://${publicUrl}`);
