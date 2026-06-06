@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   DEFAULT_DESCRIPTION,
   DEFAULT_TITLE,
+  GOOGLE_SITE_VERIFICATION,
   SITE_NAME,
   SITE_TITLE_SEPARATOR,
   SITE_URL,
@@ -89,6 +90,9 @@ export function buildMetadata(options: BuildMetadataOptions = {}): Metadata {
     title: resolvedTitle,
     description,
     keywords,
+    verification: GOOGLE_SITE_VERIFICATION
+      ? { google: GOOGLE_SITE_VERIFICATION }
+      : undefined,
     alternates: canonicalUrl ? { canonical: canonicalUrl } : undefined,
     openGraph: {
       type: ogType,

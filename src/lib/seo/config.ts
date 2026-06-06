@@ -25,6 +25,15 @@ export const DEFAULT_DESCRIPTION =
 /** Twitter/X handle for the site, including the leading @. */
 export const TWITTER_HANDLE = "@lmon_25";
 
+/**
+ * Google Search Console verification token. Set `GOOGLE_SITE_VERIFICATION` to
+ * the `content` value from GSC's "HTML tag" verification method to emit the
+ * `<meta name="google-site-verification">` tag. Optional — left unset, no tag
+ * is rendered (use DNS verification instead). See the README.
+ */
+export const GOOGLE_SITE_VERIFICATION =
+  process.env.GOOGLE_SITE_VERIFICATION || undefined;
+
 /** Theme color used for the brand mark in OG images. */
 export const BRAND_COLOR = "#8b5cf6";
 

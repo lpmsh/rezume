@@ -7,6 +7,8 @@ import { headers } from "next/headers";
 import { ResumeViewer } from "./resume-viewer-loader";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
+import { MadeWithRezume } from "@/components/made-with-rezume";
+import { showsAttribution } from "@/lib/plan";
 
 export async function generateMetadata({
   params,
@@ -47,7 +49,7 @@ export default async function PublicResumePage({
 
   const resume = await prisma.resume.findFirst({
     where: { slug, namedSlug: null, isPublic: true, isPrimary: true },
-    include: { user: { select: { id: true } } },
+    include: { user: { select: { id: true, plan: true } } },
   });
 
   if (!resume) {
@@ -86,11 +88,7 @@ export default async function PublicResumePage({
         displayName={resume.displayName}
         resumeId={resume.id}
       />
-      <div className="fixed right-4 bottom-4 z-10 text-xs text-neutral-400">
-        <a href="/" className="hover:text-neutral-600 transition-colors">
-          rezume.so
-        </a>
-      </div>
+      {showsAttribution(resume.user.plan) && <MadeWithRezume />}
     </div>
   );
 }
