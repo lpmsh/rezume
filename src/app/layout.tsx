@@ -1,6 +1,11 @@
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import {
+  buildMetadata,
+  JsonLd,
+  organizationSchema,
+  websiteSchema,
+} from "@/lib/seo";
 import "./globals.css";
 
 const inter = Inter({
@@ -9,17 +14,7 @@ const inter = Inter({
   variable: "--font-sans",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.rezume.so"
-  ),
-  title: "Rezume - Your resume, one link",
-  description:
-    "Upload a PDF, claim your slug, share a permanent link. Update your resume, same URL, always.",
-  alternates: {
-    canonical: "https://www.rezume.so",
-  },
-};
+export const metadata = buildMetadata({ canonical: "/" });
 
 export default function RootLayout({
   children,
@@ -29,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased bg-white`}>
+        <JsonLd data={[organizationSchema(), websiteSchema()]} />
         {children}
         <Analytics />
       </body>
