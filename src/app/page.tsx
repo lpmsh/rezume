@@ -30,6 +30,12 @@ export default function LandingPage() {
             <span className="text-sm font-semibold text-black">Rezume</span>
           </Link>
           <div className="flex items-center gap-x-3 text-sm">
+            <Link
+              href="/guides"
+              className="text-neutral-500 hover:text-black transition-colors"
+            >
+              Guides
+            </Link>
             {session ? (
               <Link href="/app">
                 <Button size="sm">Dashboard</Button>
@@ -50,7 +56,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Hero — centered vertically */}
+        {/* Hero, centered vertically */}
         <div className="flex-1 flex flex-col justify-center pb-32">
           <p className="text-neutral-800 text-base leading-relaxed">
             One link for your resume. Upload a PDF, claim your URL, share it

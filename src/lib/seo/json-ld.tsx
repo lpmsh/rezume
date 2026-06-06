@@ -15,7 +15,7 @@ const SCHEMA_CONTEXT = "https://schema.org";
 
 /**
  * Renders one or more schema.org nodes as a JSON-LD `<script>` tag.
- * Drop this anywhere in a server component's tree (head or body — Google reads
+ * Drop this anywhere in a server component's tree (head or body, since Google reads
  * both). Pass a single object or an array of objects.
  *
  * The `@context` is injected automatically if absent.

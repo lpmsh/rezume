@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   DEFAULT_DESCRIPTION,
   DEFAULT_TITLE,
+  GOOGLE_SITE_VERIFICATION,
   SITE_NAME,
   SITE_TITLE_SEPARATOR,
   SITE_URL,
@@ -11,7 +12,7 @@ import {
 
 export interface BuildMetadataOptions {
   /**
-   * Page title. Rendered as `<title> — Rezume` unless `absoluteTitle` is set.
+   * Page title. Rendered as `<title> | Rezume` unless `absoluteTitle` is set.
    * Omit to use the site default title.
    */
   title?: string;
@@ -37,7 +38,7 @@ export interface BuildMetadataOptions {
    * non-public route. Defaults to false (indexable).
    */
   noindex?: boolean;
-  /** Extra keywords. Optional — modern Google largely ignores these. */
+  /** Extra keywords. Optional; modern Google largely ignores these. */
   keywords?: string[];
 }
 
@@ -89,6 +90,9 @@ export function buildMetadata(options: BuildMetadataOptions = {}): Metadata {
     title: resolvedTitle,
     description,
     keywords,
+    verification: GOOGLE_SITE_VERIFICATION
+      ? { google: GOOGLE_SITE_VERIFICATION }
+      : undefined,
     alternates: canonicalUrl ? { canonical: canonicalUrl } : undefined,
     openGraph: {
       type: ogType,

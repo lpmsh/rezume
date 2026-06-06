@@ -3,7 +3,9 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 import { useSlugCheck } from "@/hooks/use-slug-check";
+import { clearGuideReferrer, readGuideReferrer } from "@/lib/analytics";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -79,6 +81,16 @@ function SetupPageInner() {
 
     // Clear the pending_slug cookie
     document.cookie = "pending_slug=;path=/;max-age=0";
+
+    // Resume link created. Fire the conversion event, attributed to the guide
+    // that referred the visitor (if any) so the guide → create funnel is
+    // measurable in analytics.
+    const referrer = readGuideReferrer();
+    track(
+      "resume_link_created",
+      referrer ? { source: "guide", guide: referrer } : { source: "direct" },
+    );
+    clearGuideReferrer();
 
     router.push("/app");
   }
