@@ -1,11 +1,12 @@
 /**
  * Client-side conversion attribution for the guide → signup/create funnel.
  *
- * When a visitor clicks a guide's CTA we record which guide they came from in a
- * short-lived cookie. That cookie survives the Google OAuth round-trip, so when
- * the resume link is finally created (slug claim) we can attribute the
- * conversion back to the guide that drove it. Pair with `@vercel/analytics`
- * `track()` events: `guide_cta_click` and `resume_link_created`.
+ * A guide's CTA links to `/signup?ref=<source>`. The signup page reads that
+ * param and records it in a short-lived cookie. That cookie survives the Google
+ * OAuth round-trip, so when the resume link is finally created (slug claim) we
+ * can attribute the conversion back to the guide that drove it. Pair with
+ * `@vercel/analytics` `track()` events: `guide_cta_click` and
+ * `resume_link_created`.
  *
  * Browser-only: these touch `document.cookie`; call from client components.
  */

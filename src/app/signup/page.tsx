@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { useSlugCheck } from "@/hooks/use-slug-check";
+import { setGuideReferrer } from "@/lib/analytics";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -33,6 +34,15 @@ export default function SignupPage() {
 function SignupPageInner() {
   const searchParams = useSearchParams();
   const initialSlug = searchParams.get("slug") ?? "";
+  const ref = searchParams.get("ref");
+
+  // Persist the guide a visitor arrived from (?ref=<slug>) into a cookie so the
+  // resume-link-created conversion event can be attributed to it after the
+  // Google OAuth round-trip. Reading it here also covers new-tab opens, where
+  // the CTA's onClick never fires.
+  useEffect(() => {
+    if (ref) setGuideReferrer(ref);
+  }, [ref]);
 
   const [slug, setSlug] = useState(initialSlug);
   const { status: slugStatus, reason: slugReason } = useSlugCheck(slug);

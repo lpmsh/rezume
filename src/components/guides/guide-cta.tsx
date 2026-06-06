@@ -4,16 +4,16 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { track } from "@vercel/analytics";
 import { Button } from "@/components/ui/button";
-import { setGuideReferrer } from "@/lib/analytics";
 
 /**
  * Reusable call-to-action pointing at the resume-link create flow. Used inline
  * within guide bodies, as the closing CTA on guide pages, and on the hub.
  *
- * On click it fires a `guide_cta_click` analytics event and records the source
- * page in a cookie, so a resume link created later in the funnel can be
- * attributed back to the guide that drove it. `source` is the guide slug (or
- * "guides-hub" on the hub).
+ * The signup link carries a `?ref=<source>` param identifying the page the
+ * click came from, so the signup page can attribute the visitor to that guide
+ * even when the link is opened in a new tab (where `onClick` never fires). On a
+ * normal click it also fires a `guide_cta_click` analytics event. `source` is
+ * the guide slug (or "guides-hub" on the hub).
  */
 export function GuideCta({
   source = "guides",
@@ -24,8 +24,9 @@ export function GuideCta({
   heading?: string;
   subheading?: string;
 }) {
+  const href = `/signup?ref=${encodeURIComponent(source)}`;
+
   function handleClick() {
-    setGuideReferrer(source);
     track("guide_cta_click", { source });
   }
 
@@ -35,7 +36,7 @@ export function GuideCta({
         <p className="text-base font-semibold text-neutral-900">{heading}</p>
         <p className="mt-1 text-sm text-neutral-500">{subheading}</p>
       </div>
-      <Link href="/signup" onClick={handleClick} className="shrink-0">
+      <Link href={href} onClick={handleClick} className="shrink-0">
         <Button className="gap-1.5">
           Create your resume link
           <ArrowRight className="size-4" />
