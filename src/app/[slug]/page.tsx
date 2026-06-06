@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { ResumeViewer } from "./resume-viewer-loader";
 import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -22,34 +23,19 @@ export async function generateMetadata({
   });
 
   const name = resume?.user?.name ?? resume?.displayName ?? "Resume";
-  const description =
-    resume?.user?.tagline ?? `${name}'s resume on Rezume`;
+  const description = resume?.user?.tagline ?? `${name}'s resume on Rezume`;
 
-  return {
+  return buildMetadata({
     title: name,
+    absoluteTitle: true,
     description,
-    openGraph: {
-      title: name,
-      description: resume?.user?.tagline ?? "View resume on Rezume",
-      images: [
-        {
-          url: `/api/og/${slug}`,
-          width: 1200,
-          height: 630,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: name,
-      description: resume?.user?.tagline ?? "View resume on Rezume",
-      images: [`/api/og/${slug}`],
-    },
-    alternates: {
-      canonical: `https://www.rezume.so/${slug}`,
-    },
-    robots: { index: false, follow: false },
-  };
+    canonical: `/${slug}`,
+    // Resume-specific OG card rendered by the per-slug endpoint.
+    image: `/api/og/${slug}`,
+    ogType: "profile",
+    // Hosted resumes are private to each user — keep them out of search.
+    noindex: true,
+  });
 }
 
 export default async function PublicResumePage({
