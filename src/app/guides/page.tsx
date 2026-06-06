@@ -10,10 +10,10 @@ import { GuideCta } from "@/components/guides/guide-cta";
 export const dynamic = "force-static";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Resume Link Guides: Share Your Resume Online — Rezume",
+  title: "Resume Link Guides: Share Your Resume Online | Rezume",
   absoluteTitle: true,
   description:
-    "Guides on how to create a resume link and share your resume online — for LinkedIn, email, job applications, and your profession. One link, always current.",
+    "Guides on how to create a resume link and share your resume online: for LinkedIn, email, job applications, and your profession. One link, always current.",
   canonical: "/guides",
   image: { title: "Resume Link Guides", subtitle: "Share your resume online" },
 });
@@ -37,7 +37,7 @@ const CLUSTER_SECTIONS: {
     key: "platform",
     title: "Where to share your resume link",
     blurb:
-      "Add your link to the places recruiters actually look — and do it the right way.",
+      "Add your link to the places recruiters actually look, and do it the right way.",
   },
   {
     key: "audience",
@@ -85,7 +85,7 @@ export default async function GuidesIndexPage() {
           </h1>
           <p className="mt-2 text-[15px] leading-relaxed text-neutral-500">
             Everything you need to create a resume link and share your resume
-            online — one permanent URL you can put on LinkedIn, in email, and on
+            online. One permanent URL you can put on LinkedIn, in email, and on
             every job application, and update anytime without re-sending a thing.
           </p>
 

@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // App, auth, and API routes are non-public — keep them out of the index.
+        // App, auth, and API routes are non-public, so keep them out of the index.
         // Individual resume pages (`/[slug]`) opt out via per-page `noindex`.
         disallow: ["/app", "/login", "/signup", "/api"],
       },

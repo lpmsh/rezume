@@ -7,11 +7,11 @@
  * conversion back to the guide that drove it. Pair with `@vercel/analytics`
  * `track()` events: `guide_cta_click` and `resume_link_created`.
  *
- * Browser-only — these touch `document.cookie`; call from client components.
+ * Browser-only: these touch `document.cookie`; call from client components.
  */
 
 const REFERRER_COOKIE = "rz_ref";
-const MAX_AGE_SECONDS = 60 * 60 * 24; // 1 day — long enough to finish signup.
+const MAX_AGE_SECONDS = 60 * 60 * 24; // 1 day, long enough to finish signup.
 
 /** Record the guide (or hub) a CTA click came from. */
 export function setGuideReferrer(source: string): void {

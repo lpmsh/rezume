@@ -56,7 +56,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Hero — centered vertically */}
+        {/* Hero, centered vertically */}
         <div className="flex-1 flex flex-col justify-center pb-32">
           <p className="text-neutral-800 text-base leading-relaxed">
             One link for your resume. Upload a PDF, claim your URL, share it

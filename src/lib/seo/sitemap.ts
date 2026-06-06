@@ -9,13 +9,13 @@ export interface SitemapRoute {
   /** ISO date or Date of last modification. */
   lastModified?: string | Date;
   changeFrequency?: SitemapEntry["changeFrequency"];
-  /** 0.0–1.0 relative priority. */
+  /** 0.0 to 1.0 relative priority. */
   priority?: number;
 }
 
 /**
  * Static public, indexable routes. Other tiers extend coverage by registering
- * dynamic routes via `registerSitemapSource()` — keep this list to truly static
+ * dynamic routes via `registerSitemapSource()`. Keep this list to truly static
  * marketing pages.
  */
 const STATIC_ROUTES: SitemapRoute[] = [

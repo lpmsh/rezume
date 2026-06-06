@@ -3,7 +3,7 @@ import type { GuideFaqItem } from "@/lib/content/schema";
 
 /**
  * Visible FAQ accordion. Built on native `<details>`/`<summary>` so it works
- * with zero client JS — keeping guide pages fully static and fast. The matching
+ * with zero client JS, keeping guide pages fully static and fast. The matching
  * `FAQPage` JSON-LD is emitted separately (see the guide route) from the same
  * frontmatter `faq` array.
  */

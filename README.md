@@ -5,7 +5,7 @@
 
 Dead-simple resume hosting. Upload a PDF, claim a slug, share a permanent link.
 
-Your resume lives at `rezume.so/yourname` — update the PDF anytime without changing the URL.
+Your resume lives at `rezume.so/yourname`, and you can update the PDF anytime without changing the URL.
 
 ## Features
 
@@ -93,7 +93,7 @@ src/
 ## SEO & Growth
 
 The marketing/SEO content cluster lives under `/guides` (hub + pillar, platform,
-and audience pages). Content is authored as MDX in `content/guides/*.mdx` — see
+and audience pages). Content is authored as MDX in `content/guides/*.mdx`; see
 that directory and `src/lib/content/` for the schema. This section covers the
 instrumentation around it.
 
@@ -102,20 +102,20 @@ instrumentation around it.
 Verification can be done two ways:
 
 - **DNS (recommended, no code):** add the TXT record GSC gives you to the
-  `rezume.so` DNS zone. **Manual — requires the domain owner.**
+  `rezume.so` DNS zone. **Manual: requires the domain owner.**
 - **HTML tag (via env var):** in GSC, choose **Add property → URL prefix →
   HTML tag**, copy the `content="..."` value, and set it as
   `GOOGLE_SITE_VERIFICATION` in the Vercel project env. The app renders the
   `<meta name="google-site-verification">` tag automatically (see
   `src/lib/seo/metadata.ts`). Redeploy, then click **Verify** in GSC.
 
-**Submit the sitemap** (manual, one-time, in the GSC UI — requires the account
+**Submit the sitemap** (manual, one-time, in the GSC UI, requires the account
 owner): open **Sitemaps**, enter `sitemap.xml`, and submit. The sitemap is
 generated at [`/sitemap.xml`](/sitemap.xml) by `src/app/sitemap.ts` and includes
 the homepage, the `/guides` hub, and every guide, each with a `lastModified`
 date pulled from the content's `updatedAt` frontmatter.
 
-> Steps marked **manual** can't be automated from the repo — they need the
+> Steps marked **manual** can't be automated from the repo. They need the
 > Google account / domain owner.
 
 ### Analytics & conversion tracking

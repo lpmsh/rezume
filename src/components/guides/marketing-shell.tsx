@@ -14,7 +14,7 @@ function Logo() {
 /**
  * Page chrome for public marketing/content pages (guides index + guide pages).
  * Mirrors the landing page's header/footer so content pages feel native to the
- * product. Server component — no interactivity needed.
+ * product. Server component, no interactivity needed.
  */
 export function MarketingShell({ children }: { children: React.ReactNode }) {
   return (

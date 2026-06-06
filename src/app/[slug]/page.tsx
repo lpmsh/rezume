@@ -35,7 +35,7 @@ export async function generateMetadata({
     // Resume-specific OG card rendered by the per-slug endpoint.
     image: `/api/og/${slug}`,
     ogType: "profile",
-    // Hosted resumes are private to each user — keep them out of search.
+    // Hosted resumes are private to each user, so keep them out of search.
     noindex: true,
   });
 }

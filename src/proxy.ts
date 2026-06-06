@@ -24,7 +24,7 @@ async function getSession(request: NextRequest) {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protected routes — redirect to login if not authenticated
+  // Protected routes: redirect to login if not authenticated
   if (pathname.startsWith("/app")) {
     const session = await getSession(request);
     if (!session) {
@@ -33,7 +33,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Auth pages — redirect to /app if already authenticated
+  // Auth pages: redirect to /app if already authenticated
   if (pathname === "/login" || pathname === "/signup") {
     const session = await getSession(request);
     if (session) {
@@ -42,7 +42,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Homepage — redirect to /app if authenticated
+  // Homepage: redirect to /app if authenticated
   if (pathname === "/") {
     const session = await getSession(request);
     if (session) {

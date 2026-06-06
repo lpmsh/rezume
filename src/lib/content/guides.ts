@@ -9,7 +9,7 @@ import { type GuideFrontmatter, validateFrontmatter } from "./schema";
 /**
  * Filesystem-backed loader for guide/landing pages. Content lives in
  * `content/guides/*.mdx`; adding a new page is a matter of dropping in one MDX
- * file — no route code changes. All reads happen at build time (SSG), so this
+ * file, with no route code changes. All reads happen at build time (SSG), so this
  * module is server-only.
  */
 

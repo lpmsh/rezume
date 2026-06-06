@@ -14,10 +14,10 @@ export const SITE_URL = (
 
 export const SITE_NAME = "Rezume";
 
-/** Used for the title template suffix, e.g. "Pricing — Rezume". */
-export const SITE_TITLE_SEPARATOR = "—";
+/** Used for the title template suffix, e.g. "Pricing | Rezume". */
+export const SITE_TITLE_SEPARATOR = "|";
 
-export const DEFAULT_TITLE = "Rezume — Your resume, one link";
+export const DEFAULT_TITLE = "Rezume | Your resume, one link";
 
 export const DEFAULT_DESCRIPTION =
   "Upload a PDF, claim your slug, share a permanent link. Update your resume, same URL, always.";
@@ -28,7 +28,7 @@ export const TWITTER_HANDLE = "@lmon_25";
 /**
  * Google Search Console verification token. Set `GOOGLE_SITE_VERIFICATION` to
  * the `content` value from GSC's "HTML tag" verification method to emit the
- * `<meta name="google-site-verification">` tag. Optional — left unset, no tag
+ * `<meta name="google-site-verification">` tag. Optional. Left unset, no tag
  * is rendered (use DNS verification instead). See the README.
  */
 export const GOOGLE_SITE_VERIFICATION =

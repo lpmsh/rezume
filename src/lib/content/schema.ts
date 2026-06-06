@@ -9,9 +9,9 @@
 
 /**
  * Content cluster a guide belongs to. Used for grouping and internal linking:
- * - `pillar`   — broad cornerstone topic (e.g. "online resume").
- * - `platform` — tied to a specific platform (e.g. "resume link for LinkedIn").
- * - `audience` — tied to a specific audience (e.g. "resume link for students").
+ * - `pillar`:   broad cornerstone topic (e.g. "online resume").
+ * - `platform`: tied to a specific platform (e.g. "resume link for LinkedIn").
+ * - `audience`: tied to a specific audience (e.g. "resume link for students").
  */
 export type GuideCluster = "pillar" | "platform" | "audience";
 
@@ -32,7 +32,7 @@ export interface GuideHowToStep {
 /**
  * Optional structured how-to. When present on a guide, it's emitted as `HowTo`
  * JSON-LD in addition to the page's Article schema. The visible steps still
- * live in the MDX body — this is the machine-readable mirror.
+ * live in the MDX body; this is the machine-readable mirror.
  */
 export interface GuideHowTo {
   name: string;

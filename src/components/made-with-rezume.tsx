@@ -1,6 +1,6 @@
 /**
  * "Made with rezume.so" attribution footer shown on hosted resume pages for
- * free-plan users — the product's viral loop. Tasteful and unobtrusive: a small
+ * free-plan users (the product's viral loop). Tasteful and unobtrusive: a small
  * pill anchored to the bottom-right that links back to the homepage. Paid plans
  * hide it (gated by the caller via `showsAttribution`).
  */

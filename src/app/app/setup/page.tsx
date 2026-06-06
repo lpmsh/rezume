@@ -82,7 +82,7 @@ function SetupPageInner() {
     // Clear the pending_slug cookie
     document.cookie = "pending_slug=;path=/;max-age=0";
 
-    // Resume link created — fire the conversion event, attributed to the guide
+    // Resume link created. Fire the conversion event, attributed to the guide
     // that referred the visitor (if any) so the guide → create funnel is
     // measurable in analytics.
     const referrer = readGuideReferrer();

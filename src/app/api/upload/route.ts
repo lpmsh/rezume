@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
 
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  // Create new resume — only set as primary if no existing primary
+  // Create new resume, only set as primary if no existing primary
   const existingPrimary = await prisma.resume.findFirst({
     where: { userId, slug, isPrimary: true },
     select: { id: true },

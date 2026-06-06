@@ -12,7 +12,7 @@ import {
 
 export interface BuildMetadataOptions {
   /**
-   * Page title. Rendered as `<title> — Rezume` unless `absoluteTitle` is set.
+   * Page title. Rendered as `<title> | Rezume` unless `absoluteTitle` is set.
    * Omit to use the site default title.
    */
   title?: string;
@@ -38,7 +38,7 @@ export interface BuildMetadataOptions {
    * non-public route. Defaults to false (indexable).
    */
   noindex?: boolean;
-  /** Extra keywords. Optional — modern Google largely ignores these. */
+  /** Extra keywords. Optional; modern Google largely ignores these. */
   keywords?: string[];
 }
 

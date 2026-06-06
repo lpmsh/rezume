@@ -8,12 +8,12 @@ const VALUE_PROPS = [
   {
     icon: BarChart3,
     title: "Built-in view tracking",
-    body: "See when your resume is opened — something a PDF attachment can never tell you.",
+    body: "See when your resume is opened. A PDF attachment can never tell you that.",
   },
   {
     icon: Link2,
     title: "One stable URL",
-    body: "Update your resume anytime and the link stays the same. No more “final_v3.pdf”.",
+    body: 'Update your resume anytime and the link stays the same. No more "final_v3.pdf".',
   },
   {
     icon: Sparkles,
