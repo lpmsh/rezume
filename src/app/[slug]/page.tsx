@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getResume } from "@/lib/r2";
 import { trackView } from "@/lib/view-counter";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -56,9 +55,10 @@ export default async function PublicResumePage({
     notFound();
   }
 
-  const { body } = await getResume(resume.r2Key);
-  const pdfBytes = await body!.transformToByteArray();
-  const pdfDataUrl = `data:application/pdf;base64,${Buffer.from(pdfBytes).toString("base64")}`;
+  // Serve the PDF from a CDN-cacheable URL rather than inlining it as a
+  // multi-MB base64 data URL in the HTML. Versioned by updatedAt so a
+  // re-upload busts the edge cache.
+  const pdfUrl = `/${slug}/pdf?v=${resume.updatedAt.getTime()}`;
 
   // Track view (non-blocking)
   const reqHeaders = await headers();
@@ -84,7 +84,7 @@ export default async function PublicResumePage({
   return (
     <div className="h-screen">
       <ResumeViewer
-        pdfUrl={pdfDataUrl}
+        pdfUrl={pdfUrl}
         displayName={resume.displayName}
         resumeId={resume.id}
       />
